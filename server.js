@@ -25,7 +25,8 @@ app.use(methodOverride());
 
 // Define model =============================
 var Todo = mongoose.model('Todo',{
-	text : String
+	text : String,
+	done: Boolean
 });
 
 // routes ======================================
@@ -65,6 +66,68 @@ app.post('/api/todos',function(req,res){
 		});
 
 	});
+});
+
+// update a TODO and send back all todos after creation
+app.post('/api/todos/:id',function(req,res){
+
+	Todo.update({_id:req.params.id},{text:req.body.text}, function(err,todo){
+		if (err){
+			res.send(err);
+		}
+
+		// get and return all the todos after you create another todo
+		Todo.find(function(err,todos){
+			if(err){
+				res.send(err);
+			}
+			res.json(todos);
+		});
+
+	});
+})
+
+app.post('/api/todos/switchcomplete/:id',function(req,res){	
+	Todo.findById(req.params.id,function(err,todo){
+		if (err){
+			res.send('Error while finding by id: ' + err);
+		}
+
+		console.log('Switching COMPLETE state for [id=' + req.params.id + ',text='+todo.text+'] from ' + todo.done + ' to ' + !todo.done);
+
+		Todo.update({_id:req.params.id},{done:!todo.done},function(err,todo){
+			if (err){
+				res.send('Error while switching complete: ' + err);
+			}
+
+			// get and return all the todos after you create another todo
+			Todo.find(function(err,todos){
+				if(err){
+					res.send('Error while retrieving all tODOs: ' + err);
+				}
+				res.json(todos);
+			});
+		})
+	})
+
+})
+
+// delete a TODO using his id abnd send back all todos
+app.delete('/api/todos/:id',function(req,res){
+	console.log('Trying to remove todo with id ' + req.params.id);
+	Todo.remove({_id:req.params.id}, function(err){
+		if (err){
+			res.send(err);
+		}
+
+		// get and return all the todos after you create another todo
+		Todo.find(function(err,todos){
+			if(err){
+				res.send(err);
+			}
+			res.json(todos);
+		});
+	})
 });
 
 // appplication -----------------

@@ -27,8 +27,33 @@
 
 		<!-- HEADER and TODO COUNT -->
 		<div class="jumbotron text-center">
-			<h1>I'm a TODO-AHOLIC by Scotch and Nico <span class="label label-info">{{ todos.length }}</span></h1>
+			<h1><span class="label label-info">{{ todos.length }}</span> TODOs and counting</h1>
 		</div>
+
+		<!-- list of TODOS to be completed-->
+		<div id="todo-list">
+			<h2>Not done yet</h2>
+			<table>
+				<tr data-ng-repeat="todo in todos">
+					<td>{{ todo.text }}</td>
+					<td><button type="button" ng-click="editTodo(todo)">Edit that prick</button></td>
+					<td><button type="button" ng-click="deleteTodo(todo._id)">Remove that bastard</button></td>
+					<td><input type="checkbox" ng-click="completeTodo(todo._id)" ng-model="todo.done"></td>
+				</tr>
+			</table>
+		</div>
+
+		<!-- list of TODOS not completed -->
+		<!--<div id="todo-list">
+			<h2>Done yet</h2>
+			<table>
+				<tr data-ng-repeat="todo in todos">
+					<td>{{ todo.text }}</td>
+					<td><button type="button" ng-click="editTodo(todo)">Edit that prick</button></td>
+					<td><button type="button" ng-click="deleteTodo(todo._id)">Remove that bastard</button></td>
+				</tr>
+			</table>
+		</div>-->
 
 		<!-- FORM to CREATE TODOS -->
 		<div id="todo-form" class="row">
@@ -38,15 +63,16 @@
 
 							<!-- BIND THIS VALUE TO formData.text in ANGULAR -->
 							<input type="text" class="form-control input-lg text-center" placeholder="New fucking task that I'll probably postpone anyway" ng-model="formData.text">
+							<input type="hidden" ng-model="formData._id">
 						</div>
 
 						<!-- createToDo() will create new Todos -->
-						<button type="submit" class="btn btn-primary btn-lg" ng-click="createTodo()">Add</button>
+						<button type="submit" class="btn btn-primary btn-lg" ng-click="createOrUpdateTodo()">Add/Modify TODO</button>
 					</form>
 				</div>
 			</div>
 		</div>
-		
+
 	</div>
 </body>
 </html>
