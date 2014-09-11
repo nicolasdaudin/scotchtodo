@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1"><!-- Optimize mobile viewport -->
 
-	<title>Node/Angular Todo App</title>
+	<title>Clickbank et Node/Angular Todo App</title>
 
 	<!-- SCROLLS -->
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
@@ -29,6 +29,8 @@
 		<div class="jumbotron text-center">
 			<h1><span class="label label-info">{{ todos.length }}</span> TODOs and counting</h1>
 		</div>
+
+		<div><button type="button" ng-click="getClickBankStats()">CLICKBANK stats</button></div>
 
 		<!-- list of TODOS to be completed-->
 		<div id="todo-list">

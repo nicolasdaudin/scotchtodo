@@ -77,5 +77,16 @@ function mainController($scope, $http){
 		$scope.formData = todoToEdit;		
 		console.log('Todo to edit: ' + JSON.stringify(todoToEdit));
 	};
+
+	$scope.getClickBankStats = function(){
+		$http.get('/clickbank')
+				.success(function(data){					
+					console.log('Clickbank operation: success');
+				})
+				.error(function(data){
+					console.log('Clickbank operation: ERROR');
+				});
+
+	}
 }
 

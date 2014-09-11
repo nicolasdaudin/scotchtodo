@@ -5,6 +5,7 @@ var mongoose = require('mongoose');// mongoose for mongodb
 var morgan = require('morgan');// log requests to the console (express4)
 var bodyParser = require('body-parser');// pull information from HTML POST (express4)
 var methodOverride = require('method-override');// simulate DELETE and PUT (express4)
+var http = require('http');
 
 // configuration =======================
 
@@ -44,6 +45,42 @@ app.get('/api/todos',function(req,res){
 		res.json(todos); // return all todos in JSON format
 
 	})
+})
+
+// get clickbank data
+app.get('/clickbank',function(req,res){
+	console.log('Clickbank method START');
+	var host = 'https://api.clickbank.com';	
+	var path = '/rest/1.3/quickstats/accounts';
+	var user_api_key = 'API-JBQIHA1OH2QH40PDQ9LLLAIR1S0BCAKT';
+	var dev_api_key = 'DEV-8Q6RMJUSUOCR3PRFF2QUGF1JGQ575UO2';
+
+	var options = {
+	    host: host,	
+	    method: 'GET',
+	    path: path,
+	    headers: {
+	    	'Accept': 'application/json', 
+	    	'Authorization':dev_api_key + ':' + 'user_api_key'
+	    }
+	  };
+
+	var cbreq = http.request(options, function(res) {
+		  console.log('STATUS: ' + res.statusCode);
+		  console.log('HEADERS: ' + JSON.stringify(res.headers));
+		  res.setEncoding('utf8');
+		  res.on('data', function (chunk) {
+		    console.log('BODY: ' + chunk);
+		  });
+		});
+	
+	cbreq.on('error', function(e) {
+	  console.log('problem with request: ' + e.message);
+	});
+
+	cbreq.end();
+
+	res.send('success');
 })
 
 // create todo and send back all todos after creation
