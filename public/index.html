@@ -34,8 +34,8 @@
 		<div id="todo-list">
 			<h2>Not done yet</h2>
 			<table>
-				<tr data-ng-repeat="todo in todos">
-					<td>{{ todo.text }}</td>
+				<tr data-ng-repeat="todo in todos | filter: {done:false}">
+					<td><span id="text">{{ todo.text }}</span></td>
 					<td><button type="button" ng-click="editTodo(todo)">Edit that prick</button></td>
 					<td><button type="button" ng-click="deleteTodo(todo._id)">Remove that bastard</button></td>
 					<td><input type="checkbox" ng-click="completeTodo(todo._id)" ng-model="todo.done"></td>
@@ -44,16 +44,17 @@
 		</div>
 
 		<!-- list of TODOS not completed -->
-		<!--<div id="todo-list">
-			<h2>Done yet</h2>
+		<div id="todo-list">
+			<h2>COMPLETED (well done mate)</h2>
 			<table>
-				<tr data-ng-repeat="todo in todos">
-					<td>{{ todo.text }}</td>
+				<tr data-ng-repeat="todo in todos | filter: {done:true}">
+					<td><span style="text-decoration: line-through">{{ todo.text }}</span></td>
 					<td><button type="button" ng-click="editTodo(todo)">Edit that prick</button></td>
 					<td><button type="button" ng-click="deleteTodo(todo._id)">Remove that bastard</button></td>
+					<td><input type="checkbox" ng-click="completeTodo(todo._id)" ng-model="todo.done"></td>
 				</tr>
 			</table>
-		</div>-->
+		</div>
 
 		<!-- FORM to CREATE TODOS -->
 		<div id="todo-form" class="row">

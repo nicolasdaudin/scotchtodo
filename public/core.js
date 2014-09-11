@@ -78,3 +78,4 @@ function mainController($scope, $http){
 		console.log('Todo to edit: ' + JSON.stringify(todoToEdit));
 	};
 }
+
