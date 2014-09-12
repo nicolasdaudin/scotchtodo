@@ -53,8 +53,8 @@ app.get('/api/todos',function(req,res){
 app.get('/clickbank',function(req,res){
 	console.log('Clickbank method START');
 	var host = 'api.clickbank.com';	
-	var path = '/rest/1.3/quickstats/accounts';
-	//var path = '/rest/1.3/debug';
+	//var path = '/rest/1.3/quickstats/accounts';
+	var path = '/rest/1.3/debug';
 	var dev_api_key = 'DEV-8Q6RMJUSUOCR3PRFF2QUGF1JGQ575UO2';
 	var user_api_key = 'API-JBQIHA1OH2QH40PDQ9LLLAIR1S0BCAKT';
 	
@@ -64,7 +64,7 @@ app.get('/clickbank',function(req,res){
 	    method: 'GET',
 	    path: path,
 	    auth: 'DEV-8Q6RMJUSUOCR3PRFF2QUGF1JGQ575UO2:API-JBQIHA1OH2QH40PDQ9LLLAIR1S0BCAKT',
-	    cert: fs.readFileSync('certs/clickbank.cer'),
+	    /*cert: fs.readFileSync('certs/clickbank.cer'),*/
 	    headers: {
 	    	'Accept': 'application/xml'
 	    	/*'Authorization':dev_api_key + ':' + user_api_key*/
