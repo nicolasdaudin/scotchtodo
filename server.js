@@ -5,7 +5,9 @@ var mongoose = require('mongoose');// mongoose for mongodb
 var morgan = require('morgan');// log requests to the console (express4)
 var bodyParser = require('body-parser');// pull information from HTML POST (express4)
 var methodOverride = require('method-override');// simulate DELETE and PUT (express4)
-var http = require('http');
+//var http = require('http');
+var https = require('https');
+var fs = require('fs');
 
 // configuration =======================
 
@@ -50,24 +52,35 @@ app.get('/api/todos',function(req,res){
 // get clickbank data
 app.get('/clickbank',function(req,res){
 	console.log('Clickbank method START');
-	var host = 'https://api.clickbank.com';	
+	var host = 'api.clickbank.com';	
 	var path = '/rest/1.3/quickstats/accounts';
-	var user_api_key = 'API-JBQIHA1OH2QH40PDQ9LLLAIR1S0BCAKT';
+	//var path = '/rest/1.3/debug';
 	var dev_api_key = 'DEV-8Q6RMJUSUOCR3PRFF2QUGF1JGQ575UO2';
+	var user_api_key = 'API-JBQIHA1OH2QH40PDQ9LLLAIR1S0BCAKT';
+	
 
 	var options = {
 	    host: host,	
 	    method: 'GET',
 	    path: path,
+	    auth: 'DEV-8Q6RMJUSUOCR3PRFF2QUGF1JGQ575UO2:API-JBQIHA1OH2QH40PDQ9LLLAIR1S0BCAKT',
+	    cert: fs.readFileSync('certs/clickbank.cer'),
 	    headers: {
-	    	'Accept': 'application/json', 
-	    	'Authorization':dev_api_key + ':' + 'user_api_key'
+	    	'Accept': 'application/xml'
+	    	/*'Authorization':dev_api_key + ':' + user_api_key*/
 	    }
 	  };
 
-	var cbreq = http.request(options, function(res) {
-		  console.log('STATUS: ' + res.statusCode);
-		  console.log('HEADERS: ' + JSON.stringify(res.headers));
+	var options2 = {
+		host: 'google.com',
+		method: 'GET'
+	};
+
+
+
+	var cbreq = https.request(options, function(res) {
+		  console.log('RESP STATUS: ' + res.statusCode);
+		  console.log('RESP HEADERS: ' + JSON.stringify(res.headers));
 		  res.setEncoding('utf8');
 		  res.on('data', function (chunk) {
 		    console.log('BODY: ' + chunk);
@@ -75,9 +88,9 @@ app.get('/clickbank',function(req,res){
 		});
 	
 	cbreq.on('error', function(e) {
-	  console.log('problem with request: ' + e.message);
+	  console.log('problem with request: ' + e);
 	});
-
+	
 	cbreq.end();
 
 	res.send('success');
