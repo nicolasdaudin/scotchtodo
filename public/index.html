@@ -13,6 +13,11 @@
 		html 	{overflow-y:scroll;}
 		body	{padding-top:50px;}
 		#todo-list	{margin-bottom: 30px;}
+		table,th,td	{
+			border: 1px solid black;
+			margin: 10px;
+			padding: 10px;
+		}
 	</style>
 
 	<!-- SPELLS -->
@@ -27,10 +32,56 @@
 
 		<!-- HEADER and TODO COUNT -->
 		<div class="jumbotron text-center">
-			<h1><span class="label label-info">{{ todos.length }}</span> TODOs and counting</h1>
+			<h2>CLICKBANK et ADSENSE stats</h1>
+		</div>
+		<!--<div><button type="button" ng-click="getClickBankStatsToday()">CLICKBANK TODAY</button></div>		
+		<div><button type="button" ng-click="getClickBankStatsYesterday()">CLICKBANK YESTERDAY</button></div>-->
+		<div><button type="button" ng-click="getClickBankStatsMonth()">CLICKBANK MONTH</button><span>Result: {{ clickbankResultMonth }}</span></div>
+		
+		<div>
+			<button type="button" ng-click="getClickBankStatsSumup()">CLICKBANK SUMUP</button>
+			<table>
+				<thead>
+					<tr>
+						<th>when?</th>
+						<th>sales</th>
+						<th>refund</th>
+						<th>chargeback</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>TODAY</td>
+						<td>{{ cbSumup.today.result.accountData.quickStats.sale }}</td>
+						<td>{{ cbSumup.today.result.accountData.quickStats.refund }}</td>
+						<td>{{ cbSumup.today.result.accountData.quickStats.chargeback }}</td>
+					</tr>
+					<tr>
+						<td>YESTERDAY</td>
+						<td>{{ cbSumup.yesterday.result.accountData.quickStats.sale }}</td>
+						<td>{{ cbSumup.yesterday.result.accountData.quickStats.refund }}</td>
+						<td>{{ cbSumup.yesterday.result.accountData.quickStats.chargeback }}</td>
+					</tr>
+					<tr>
+						<td>MONTH</td>
+						<td>{{ cbSumup.current_month.result.accountData.quickStats.sale }}</td>
+						<td>{{ cbSumup.current_month.result.accountData.quickStats.refund }}</td>
+						<td>{{ cbSumup.current_month.result.accountData.quickStats.chargeback }}</td>
+					</tr>
+					<tr>
+						<td>ALL_TIME</td>
+						<td>{{ cbSumup.all_time.result.accountData.quickStats.sale }}</td>
+						<td>{{ cbSumup.all_time.result.accountData.quickStats.refund }}</td>
+						<td>{{ cbSumup.all_time.result.accountData.quickStats.chargeback }}</td>
+					</tr>
+				</tbody>				
+			</table>
 		</div>
 
-		<div><button type="button" ng-click="getClickBankStats()">CLICKBANK stats</button></div>
+		<!-- HEADER and TODO COUNT -->
+		<div class="jumbotron text-center">
+			<h2><span class="label label-info">{{ todos.length }}</span> TODOs and counting</h1>
+		</div>
 
 		<!-- list of TODOS to be completed-->
 		<div id="todo-list">

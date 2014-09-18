@@ -71,8 +71,16 @@
 			"file": "server.js",
 			"settings":
 			{
-				"buffer_size": 4849,
+				"buffer_size": 5141,
 				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "certs/clickbank2.cer",
+			"settings":
+			{
+				"buffer_size": 2976,
+				"line_ending": "Unix"
 			}
 		},
 		{
@@ -256,15 +264,15 @@
 					"file": "server.js",
 					"settings":
 					{
-						"buffer_size": 4849,
+						"buffer_size": 5141,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2090,
-								2090
+								1923,
+								1923
 							]
 						],
 						"settings":
@@ -273,13 +281,39 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 588.0,
+						"translation.y": 672.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 4,
+					"file": "certs/clickbank2.cer",
+					"settings":
+					{
+						"buffer_size": 2976,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2976,
+								2976
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 857.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
 					"file": "/C/smd/dev/tutocwbrestful/app.js",
 					"settings":
 					{
@@ -307,7 +341,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 6,
 					"file": "/C/smd/dev/tutocwbrestful/routes/users.js",
 					"settings":
 					{
@@ -333,7 +367,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 7,
 					"file": "/C/smd/dev/tutocwbrestful/public/javascripts/global.js",
 					"settings":
 					{

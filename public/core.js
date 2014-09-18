@@ -78,15 +78,31 @@ function mainController($scope, $http){
 		console.log('Todo to edit: ' + JSON.stringify(todoToEdit));
 	};
 
-	$scope.getClickBankStats = function(){
-		$http.get('/clickbank')
+	$scope.getClickBankStatsMonth = function(){
+		$http.get('/clickbank/month')
 				.success(function(data){					
-					console.log('Clickbank operation: success');
+					console.log('Clickbank month operation: success');
+					console.log(JSON.stringify(data));
+					$scope.clickbankResultMonth = data.accountData.quickStats.sale;
 				})
 				.error(function(data){
 					console.log('Clickbank operation: ERROR');
 				});
 
 	}
+
+	$scope.getClickBankStatsSumup = function(){
+		$http.get('/clickbank/sumup')
+				.success(function(data){					
+					console.log('Clickbank sumup operation: success');
+					console.log(JSON.stringify(data));
+					$scope.cbSumup = data;
+				})
+				.error(function(data){
+					console.log('Clickbank operation: ERROR');
+				});
+
+	}
+
 }
 
