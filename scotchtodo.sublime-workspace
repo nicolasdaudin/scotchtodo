@@ -4,6 +4,34 @@
 		"selected_items":
 		[
 			[
+				"click",
+				"clickbankQueryData"
+			],
+			[
+				"clickba",
+				"clickbankQueryData"
+			],
+			[
+				"clic",
+				"clickbankDetail"
+			],
+			[
+				"D",
+				"DEV_API_KEY"
+			],
+			[
+				"CLICK",
+				"CLICKBANK_CONSTANTS"
+			],
+			[
+				"PA",
+				"QUICKSTATS_PATH"
+			],
+			[
+				"CL",
+				"CLICKBANK_CONSTANTS"
+			],
+			[
 				"user",
 				"user_api_key"
 			],
@@ -47,7 +75,7 @@
 			"file": "public/core.js",
 			"settings":
 			{
-				"buffer_size": 2748,
+				"buffer_size": 3579,
 				"line_ending": "Windows"
 			}
 		},
@@ -55,7 +83,7 @@
 			"file": "public/index.html",
 			"settings":
 			{
-				"buffer_size": 2929,
+				"buffer_size": 4945,
 				"line_ending": "Windows"
 			}
 		},
@@ -63,15 +91,18 @@
 			"file": "package.json",
 			"settings":
 			{
-				"buffer_size": 351,
+				"buffer_size": 392,
 				"line_ending": "Windows"
 			}
 		},
 		{
+			"contents": "// set up ===============================\nvar express = require ('express'); \nvar app		= express(); // create our app w/ express\nvar mongoose = require('mongoose');// mongoose for mongodb\nvar morgan = require('morgan');// log requests to the console (express4)\nvar bodyParser = require('body-parser');// pull information from HTML POST (express4)\nvar methodOverride = require('method-override');// simulate DELETE and PUT (express4)\n//var http = require('http');\nvar https = require('https');\nvar fs = require('fs');\nvar moment = require('moment');\nvar querystring = require('querystring');\nvar google = require('googleapis');\n\n// CLICKBANK CONSTANTS\nvar CLICKBANK_CONSTANTS = {\n	HOST: 'api.clickbank.com',	\n 	QUICKSTATS_PATH : '/rest/1.3/quickstats/count',\n 	//DETAIL_PATH : '/rest/1.3/analytics/affiliate/subscription/trends',\n 	DETAIL_PATH : '/rest/1.3/analytics/affiliate/affiliate/summary',\n 	DEV_API_KEY : 'DEV-8Q6RMJUSUOCR3PRFF2QUGF1JGQ575UO2',\n	USER_API : {\n		TYPE 	:'master',\n		KEY 	:'API-JBQIHA1OH2QH40PDQ9LLLAIR1S0BCAKT'\n	},\n	/*USER_API : {\n		TYPE 	:'nicdo77',\n		KEY 	:'API-6A9LNO4L8VVINIUIFIC96JUUERB33UDK'\n	},*/\n	ACCOUNT : 'nicdo77'\n}\n\n// INIT GOOGLE API\nvar OAuth2 = google.auth.OAuth2;\n\nvar CLIENT_ID = \"619973237257-ud5ujht6btm8njnfq6v158sm27abr5nn.apps.googleusercontent.com\";\nvar CLIENT_SECRET = \"O-b4w10_tnK96SUG9tpdDYxS\";\nvar REDIRECT_URL = \"http://localhost:8080/oauth2callback/google\";\n\nvar oauth2Client = new OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);\n\n// configuration =======================\n\n// Database stuff\n//var mongo = require('mongoskin');\n//var db = mongo.db(\"mongodb://ec2-54-183-136-164.us-west-1.compute.amazonaws.com:27017/scotchtodo\",{native_parser:true});\n\nmongoose.connect('mongodb://ec2-54-183-136-164.us-west-1.compute.amazonaws.com:27017/scotchtodo'); 	// connect to mongoDB database\n\n\napp.use(express.static(__dirname + '/public')); // set the static files location /public/img will be /img for users\napp.use(morgan('dev')); // log every request to the console\napp.use(bodyParser.urlencoded({'extended':'true'})); // parse application/x-www-form-urlencoded\napp.use(bodyParser.json()); // parse application/json\napp.use(bodyParser.json({type:'application/vnd.api+json'})); // parse application/vnd.api+json as json\napp.use(methodOverride());\n\n\n// Define model =============================\nvar Todo = mongoose.model('Todo',{\n	text : String,\n	done: Boolean\n});\n\n// routes ======================================\n\n// api -----------------------------------\n\n// get all TODOS\napp.get('/api/todos',function(req,res){\n\n	Todo.find(function(err,todos){\n		if (err){\n			res.send(err);\n		}\n		console.log(\"Number of todos found: \" + todos.length);\n		res.json(todos); // return all todos in JSON format\n\n	})\n})\n\n// get clickbank data\napp.get('/clickbank/month',function(req,res){\n	console.log('Clickbank method START');\n	var host = 'api.clickbank.com';	\n	var path = '/rest/1.3/quickstats/count';\n	//var path = '/rest/1.3/debug';\n	var dev_api_key = 'DEV-8Q6RMJUSUOCR3PRFF2QUGF1JGQ575UO2';\n	\n	var user_api = {\n		type:'master',\n		key:'API-JBQIHA1OH2QH40PDQ9LLLAIR1S0BCAKT'\n	};\n\n	/*var user_api = {\n		type:'nicdo77',\n		key:'API-6A9LNO4L8VVINIUIFIC96JUUERB33UDK'\n	};*/\n\n	var startDate = moment().startOf('month').format('YYYY-MM-DD');\n	var endDate = moment().format('YYYY-MM-DD');\n	var account = 'nicdo77';	\n\n	var clickbankQueryData = {\n		startDate: startDate,\n		endDate: endDate,\n		account: account\n	};\n	var clickbankQueryString = querystring.stringify(clickbankQueryData);\n\n	\n\n	var options = {\n	    host: host,	\n	    method: 'GET',\n	    path: path + '?' + clickbankQueryString,\n	    /*auth: dev_api_key + ':' + user_api_key,*/\n	    /*cert: fs.readFileSync('certs/clickbank.cer'),*/\n	    headers: {\n	    	'Accept': 'application/json',\n	    	'Authorization':dev_api_key + ':' + user_api.key\n	    }\n	  };\n\n	var options2 = {\n		host: 'google.com',\n		method: 'GET'\n	};\n\n	console.log('REQUEST OPTIONS [using API KEY from ' + user_api.type + ']: ' + JSON.stringify(options));\n\n	var cbreq = https.request(options, function(resCB) {\n		  console.log('RESP STATUS: ' + resCB.statusCode);\n		  console.log('RESP HEADERS: ' + JSON.stringify(resCB.headers));\n		  resCB.setEncoding('utf8');\n		  resCB.on('data', function (chunk) {\n		    console.log('BODY: ' + chunk);\n		    res.send(chunk);\n		  });\n		});\n	\n	cbreq.on('error', function(e) {\n	  console.log('problem with request: ' + e);\n	});\n	\n	cbreq.end();\n\n	//res.send('success');\n})\n\nvar clickbankQuick = function(date_interval,callback){\n\n	var clickbankQueryData = {		\n		account 	: CLICKBANK_CONSTANTS.ACCOUNT \n	};\n\n	if (date_interval.start != null){\n		clickbankQueryData.startDate = date_interval.start;\n		clickbankQueryData.endDate = date_interval.end;\n	}\n\n	var clickbankQueryString = querystring.stringify(clickbankQueryData);\n\n	var options = {\n	    host: CLICKBANK_CONSTANTS.HOST,	\n	    method: 'GET',\n	    path: CLICKBANK_CONSTANTS.QUICKSTATS_PATH + '?' + clickbankQueryString,\n	    /*auth: dev_api_key + ':' + user_api_key,*/\n	    /*cert: fs.readFileSync('certs/clickbank.cer'),*/\n	    headers: {\n	    	'Accept': 'application/json',\n	    	'Authorization':CLICKBANK_CONSTANTS.DEV_API_KEY + ':' + CLICKBANK_CONSTANTS.USER_API.KEY\n	    }\n	  };\n\n	console.log('About to request Clickbank [using API KEY from ' + CLICKBANK_CONSTANTS.USER_API.TYPE + ']: ' + JSON.stringify(options)); \n\n	//var clickbankResult; \n	var cbreq = https.request(options, function(resCB) {\n		  console.log('RESP STATUS: ' + resCB.statusCode);\n		  console.log('RESP HEADERS: ' + JSON.stringify(resCB.headers));\n		  resCB.setEncoding('utf8');\n		  resCB.on('data', function (chunk) {\n		    console.log('BODY: ' + chunk);\n		    callback(chunk);\n		  });\n		});\n	\n	cbreq.on('error', function(e) {\n	  console.log('problem with request: ' + e);\n	});\n	\n	cbreq.end();\n};\n\nvar clickbankDetail = function(date_interval,callback){\n\n	var clickbankQueryData = {\n		startDate 	: date_interval.start,\n		endDate		: date_interval.end,\n		account 	: CLICKBANK_CONSTANTS.ACCOUNT,\n		summaryType : 'AFFILIATE_ONLY' //à enlever\n	};\n\n	var clickbankQueryString = querystring.stringify(clickbankQueryData);\n\n	var options = {\n	    host: CLICKBANK_CONSTANTS.HOST,	\n	    method: 'GET',\n	    path: CLICKBANK_CONSTANTS.DETAIL_PATH + '?' + clickbankQueryString,\n	    /*auth: dev_api_key + ':' + user_api_key,*/\n	    /*cert: fs.readFileSync('certs/clickbank.cer'),*/\n	    headers: {\n	    	'Accept': 'application/json',\n	    	'Authorization':CLICKBANK_CONSTANTS.DEV_API_KEY + ':' + CLICKBANK_CONSTANTS.USER_API.KEY\n	    }\n	  };\n\n	console.log('About to request Clickbank [using API KEY from ' + CLICKBANK_CONSTANTS.USER_API.TYPE + ']: ' + JSON.stringify(options)); \n\n	//var clickbankResult; \n	var cbreq = https.request(options, function(resCB) {\n		  console.log('RESP STATUS: ' + resCB.statusCode);\n		  console.log('RESP HEADERS: ' + JSON.stringify(resCB.headers));\n		  resCB.setEncoding('utf8');\n		  resCB.on('data', function (chunk) {\n		    console.log('BODY: ' + chunk);\n		    callback(chunk);\n		  });\n		});\n	\n	cbreq.on('error', function(e) {\n	  console.log('problem with request: ' + e);\n	});\n	\n	cbreq.end();\n};\n\n// get clickbank data\napp.get('/clickbank/sumup',function(req,res){\n	console.log('Clickbank SUMUP method START');\n\n	var current_month = {\n		start :  moment().startOf('month').format('YYYY-MM-DD'),\n		end : moment().format('YYYY-MM-DD')\n	}	\n\n	/*var one_month_ago = {\n		start :  moment().subtract(1,'month').startOf('month').format('YYYY-MM-DD'),\n		end : moment().subtract(1,'month').endOf('month').format('YYYY-MM-DD'),\n		name: moment().subtract(1,'month').format('MMMM')\n	}	\n\n	var two_month_ago = {\n		start :  moment().subtract(2,'month').startOf('month').format('YYYY-MM-DD'),\n		end : moment().subtract(2,'month').endOf('month').format('YYYY-MM-DD'),\n		name: moment().subtract(2,'month').format('MMMM')\n	}	*/\n\n	var today = {\n		start 	:  	moment().format('YYYY-MM-DD'),\n		end 	: 	moment().format('YYYY-MM-DD')\n	}\n\n	var yesterday = {\n		start 	:  	moment().subtract(1,'day').format('YYYY-MM-DD'),\n		end 	: 	moment().subtract(1,'day').format('YYYY-MM-DD')\n	}\n\n	var all_time = {}\n	\n	/* to make everything parallel, check Fiber and WAITFOR\n	https://github.com/luciotato/waitfor\n	https://github.com/laverdet/node-fibers\n	*/\n	\n	function allData(){\n		console.log('Answering back ....');\n		res.send({\n			today: today,\n			yesterday: yesterday,\n			all_time: all_time,\n			current_month: current_month\n		});\n	}\n\n	var queriesToBeDone = 4; \n	clickbankQuick(current_month,function(result){\n		current_month.result = JSON.parse(result);\n		console.log('Clickbank MONTH result: ' + current_month.result);\n		if (--queriesToBeDone === 0) allData();\n\n	});\n\n	clickbankQuick(today,function(result){\n		today.result = JSON.parse(result);\n		console.log('Clickbank TODAY result: ' + today.result);\n		if (--queriesToBeDone === 0) allData();\n	});\n\n	clickbankQuick(yesterday,function(result){\n		yesterday.result = JSON.parse(result);\n		console.log('Clickbank YESTERDAY result: ' + yesterday.result);\n		if (--queriesToBeDone === 0) allData();\n	});\n\n	clickbankQuick(all_time,function(result){\n		all_time.result = JSON.parse(result);\n		console.log('Clickbank ALL TIME result: ' + all_time.result);\n		if (--queriesToBeDone === 0) allData();\n	});\n\n	\n\n\n	\n\n	/*clickbankDetail(one_month_ago,function(result){\n		one_month_ago.result = result;\n		console.log('Clickbank LAST MONTH result: ' + one_month_ago.result);\n	});*/\n\n})\n\napp.get('/google/oauth',function(req,res){\n\n	console.log('Google OAUTH START');\n	\n\n		// generate a url that asks permissions for Google+ and Google Calendar scopes\n	var scopes = [\n	  'https://www.googleapis.com/auth/adsense'	  \n	];\n\n	var url = oauth2Client.generateAuthUrl({\n		access_type: 'offline', // 'online' (default) or 'offline' (gets refresh_token)\n  		scope: scopes // If you only need one scope you can pass it as string\n	})\n\n	console.log('Google OAuth url generated : ' + url);\n	res.redirect(url);\n\n})\n\napp.get('/oauth2callback/google',function(req,res){\n	console.log('Google OAUTH CALLBACK ');\n	\n	var authCode = req.param('code');\n	console.log('Google OAUTH code authorization : ' + authCode);\n\n	oauth2Client.getToken(authCode, function(err, tokens){\n		if (!err){\n			oauth2Client.setCredentials(tokens);\n		}\n	})\n\n	var adsense = google.adsense('v1.4');\n	adsense.accounts.list({auth:oauth2Client} , function(err,response){\n		console.log('Google OAUTH result LIST: ' + response);\n		console.log('Publisher name : ' + response.items[0].name);\n		/* voir https://console.developers.google.com/project/enhanced-digit-708/apiui/api/adsense/method/adsense.accounts.list\n		detail de account.list et executer pour voir le squelette\n{\n \"kind\": \"adsense#accounts\",\n \"etag\": \"\\\"l6zUEvvBh5CHA4zPDkQgWpZUrxA/7qS0Y4uAbvi6YHK7szO1Xg\\\"\",\n \"items\": [\n  {\n   \"kind\": \"adsense#account\",\n   \"id\": \"pub-6163954883404250\",\n   \"name\": \"pub-6163954883404250\",\n   \"premium\": false,\n   \"timezone\": \"Europe/Madrid\"\n  }\n ]\n}\n\nLast test done: Google OAUTH CALLBACK\nGoogle OAUTH code authorization : 4/iXuBxZGxLBKR-gWaYF1-FfqDe6F0.cvmZ6BkXWvwWPvB8fYmgkJx9OXQekQI\nGoogle OAUTH result LIST: [object Object]\nPublisher name : pub-6163954883404250\n\nMais c'est étrange, il fuat aller plusieurs fois sur la url auth pour que ca marche....\n\n		*/\n	});\n	\n\n	//res.redirect('/');\n})\n\n// create todo and send back all todos after creation\napp.post('/api/todos',function(req,res){\n\n	Todo.create({\n		text: req.body.text,\n		done: false\n	}, function(err,todo){\n		if (err){\n			res.send(err);\n		}\n\n		// get and return all the todos after you create another todo\n		Todo.find(function(err,todos){\n			if(err){\n				res.send(err);\n			}\n			res.json(todos);\n		});\n\n	});\n});\n\n// update a TODO and send back all todos after creation\napp.post('/api/todos/:id',function(req,res){\n\n	Todo.update({_id:req.params.id},{text:req.body.text}, function(err,todo){\n		if (err){\n			res.send(err);\n		}\n\n		// get and return all the todos after you create another todo\n		Todo.find(function(err,todos){\n			if(err){\n				res.send(err);\n			}\n			res.json(todos);\n		});\n\n	});\n})\n\napp.post('/api/todos/switchcomplete/:id',function(req,res){	\n	Todo.findById(req.params.id,function(err,todo){\n		if (err){\n			res.send('Error while finding by id: ' + err);\n		}\n\n		console.log('Switching COMPLETE state for [id=' + req.params.id + ',text='+todo.text+'] from ' + todo.done + ' to ' + !todo.done);\n\n		Todo.update({_id:req.params.id},{done:!todo.done},function(err,todo){\n			if (err){\n				res.send('Error while switching complete: ' + err);\n			}\n\n			// get and return all the todos after you create another todo\n			Todo.find(function(err,todos){\n				if(err){\n					res.send('Error while retrieving all tODOs: ' + err);\n				}\n				res.json(todos);\n			});\n		})\n	})\n\n})\n\n// delete a TODO using his id abnd send back all todos\napp.delete('/api/todos/:id',function(req,res){\n	console.log('Trying to remove todo with id ' + req.params.id);\n	Todo.remove({_id:req.params.id}, function(err){\n		if (err){\n			res.send(err);\n		}\n\n		// get and return all the todos after you create another todo\n		Todo.find(function(err,todos){\n			if(err){\n				res.send(err);\n			}\n			res.json(todos);\n		});\n	})\n});\n\n// appplication -----------------\napp.get('*', function(req,res){\n	res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the frontend)\n});\n\n\n\n\n// listen (start app with node server.js) =========================\nvar PORT = 8080;\napp.listen(PORT);\nconsole.log(\"App DAEMON listening on port \" + PORT);\n",
 			"file": "server.js",
+			"file_size": 13638,
+			"file_write_time": 130556256865841346,
 			"settings":
 			{
-				"buffer_size": 5141,
+				"buffer_size": 13459,
 				"line_ending": "Windows"
 			}
 		},
@@ -157,14 +188,19 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"td",
+			"substract",
+			"chunk",
 			");\n"
 		],
 		"highlight": true,
-		"in_selection": false,
+		"in_selection": true,
 		"preserve_case": false,
 		"regex": false,
 		"replace_history":
 		[
+			"th",
+			"subtract"
 		],
 		"reverse": false,
 		"show_context": true,
@@ -183,15 +219,15 @@
 					"file": "public/core.js",
 					"settings":
 					{
-						"buffer_size": 2748,
+						"buffer_size": 3579,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2566,
-								2566
+								3575,
+								3575
 							]
 						],
 						"settings":
@@ -200,7 +236,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 924.0,
+						"translation.y": 1145.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -210,15 +246,15 @@
 					"file": "public/index.html",
 					"settings":
 					{
-						"buffer_size": 2929,
+						"buffer_size": 4945,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								778,
-								778
+								1456,
+								1456
 							]
 						],
 						"settings":
@@ -227,7 +263,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 252.0,
+						"translation.y": 210.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -237,15 +273,15 @@
 					"file": "package.json",
 					"settings":
 					{
-						"buffer_size": 351,
+						"buffer_size": 392,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								259,
-								259
+								384,
+								384
 							]
 						],
 						"settings":
@@ -264,15 +300,15 @@
 					"file": "server.js",
 					"settings":
 					{
-						"buffer_size": 5141,
+						"buffer_size": 13459,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1923,
-								1923
+								10745,
+								10745
 							]
 						],
 						"settings":
@@ -281,7 +317,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 672.0,
+						"translation.y": 4755.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -307,7 +343,7 @@
 							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 857.0,
+						"translation.y": 493.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -324,8 +360,8 @@
 						"selection":
 						[
 							[
-								947,
-								947
+								439,
+								400
 							]
 						],
 						"settings":
@@ -335,7 +371,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 462.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -388,7 +424,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3150.0,
+						"translation.y": 1596.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -429,7 +465,7 @@
 	"menu_visible": true,
 	"replace":
 	{
-		"height": 0.0
+		"height": 62.0
 	},
 	"save_all_on_build": true,
 	"select_file":

@@ -10,6 +10,7 @@ var https = require('https');
 var fs = require('fs');
 var moment = require('moment');
 var querystring = require('querystring');
+var google = require('googleapis');
 
 // CLICKBANK CONSTANTS
 var CLICKBANK_CONSTANTS = {
@@ -28,6 +29,15 @@ var CLICKBANK_CONSTANTS = {
 	},*/
 	ACCOUNT : 'nicdo77'
 }
+
+// INIT GOOGLE API
+var OAuth2 = google.auth.OAuth2;
+
+var CLIENT_ID = "619973237257-ud5ujht6btm8njnfq6v158sm27abr5nn.apps.googleusercontent.com";
+var CLIENT_SECRET = "O-b4w10_tnK96SUG9tpdDYxS";
+var REDIRECT_URL = "http://localhost:8080/oauth2callback/google";
+
+var oauth2Client = new OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
 
 // configuration =======================
 
@@ -310,6 +320,67 @@ app.get('/clickbank/sumup',function(req,res){
 		console.log('Clickbank LAST MONTH result: ' + one_month_ago.result);
 	});*/
 
+})
+
+app.get('/google/oauth',function(req,res){
+
+	console.log('Google OAUTH START');
+	
+
+		// generate a url that asks permissions for Google+ and Google Calendar scopes
+	var scopes = [
+	  'https://www.googleapis.com/auth/adsense'	  
+	];
+
+	var url = oauth2Client.generateAuthUrl({
+		access_type: 'offline', // 'online' (default) or 'offline' (gets refresh_token)
+  		scope: scopes // If you only need one scope you can pass it as string
+	})
+
+	console.log('Google OAuth url generated : ' + url);
+	res.redirect(url);
+
+})
+
+app.get('/oauth2callback/google',function(req,res){
+	console.log('Google OAUTH CALLBACK ');
+	
+	var authCode = req.param('code');
+	console.log('Google OAUTH code authorization : ' + authCode);
+
+	oauth2Client.getToken(authCode, function(err, tokens){
+		if (!err){
+			oauth2Client.setCredentials(tokens);
+		}
+	})
+
+	var adsense = google.adsense('v1.4');
+	adsense.accounts.list({auth:oauth2Client} , function(err,response){
+		console.log('Google OAUTH result LIST: ' + response);
+		console.log('Publisher name : ' + response.items[0].name);
+		/* voir https://console.developers.google.com/project/enhanced-digit-708/apiui/api/adsense/method/adsense.accounts.list
+		detail de account.list et executer pour voir le squelette
+{
+ "kind": "adsense#accounts",
+ "etag": "\"l6zUEvvBh5CHA4zPDkQgWpZUrxA/7qS0Y4uAbvi6YHK7szO1Xg\"",
+ "items": [
+  {
+   "kind": "adsense#account",
+   "id": "pub-6163954883404250",
+   "name": "pub-6163954883404250",
+   "premium": false,
+   "timezone": "Europe/Madrid"
+  }
+ ]
+}
+
+
+
+		*/
+	});
+	
+
+	//res.redirect('/');
 })
 
 // create todo and send back all todos after creation

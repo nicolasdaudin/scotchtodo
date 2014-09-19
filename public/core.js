@@ -104,5 +104,19 @@ function mainController($scope, $http){
 
 	}
 
+	$scope.getGoogleAdsenseData = function(){
+		console.log('getGoogleAdsenseData BEGIN');		
+	}
+
+	$scope.connectGoogle = function(){
+		console.log('connectGoogle BEGIN');
+		$http.get('/google/oauth')
+				.success(function(data){					
+					console.log('connectGoogle Successfull auth');					
+				})
+				.error(function(data){
+					console.log('connectGoogle ERROR');
+				});
+	}
 }
 
