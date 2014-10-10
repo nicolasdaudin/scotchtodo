@@ -17,7 +17,8 @@ var CLICKBANK_CONSTANTS = {
 	HOST: 'api.clickbank.com',	
  	QUICKSTATS_PATH : '/rest/1.3/quickstats/count',
  	//DETAIL_PATH : '/rest/1.3/analytics/affiliate/subscription/trends',
- 	DETAIL_PATH : '/rest/1.3/analytics/affiliate/affiliate/summary',
+ 	DETAIL_PATH : '/rest/1.3/analytics/affiliate/affiliate',
+ 	SUBS_DETAIL_PATH: '/rest/1.3/analytics/affiliate/subscription/details',
  	DEV_API_KEY : 'DEV-8Q6RMJUSUOCR3PRFF2QUGF1JGQ575UO2',
 	USER_API : {
 		TYPE 	:'master',
@@ -193,13 +194,61 @@ var clickbankQuick = function(date_interval,callback){
 	cbreq.end();
 };
 
+var clickbankAlltime = function(callback){
+
+	var clickbankQueryData = {		
+		account 	: CLICKBANK_CONSTANTS.ACCOUNT,
+		orderBy		: 'PURCHASE_DATE',
+		sortDirection : 'ASC' 
+	};
+
+
+	var clickbankQueryString = querystring.stringify(clickbankQueryData);
+
+	var options = {
+	    host: CLICKBANK_CONSTANTS.HOST,	
+	    method: 'GET',
+	    path: CLICKBANK_CONSTANTS.SUBS_DETAIL_PATH + '?' + clickbankQueryString,
+	    /*auth: dev_api_key + ':' + user_api_key,*/
+	    /*cert: fs.readFileSync('certs/clickbank.cer'),*/
+	    headers: {
+	    	'Accept': 'application/json',
+	    	'Authorization':CLICKBANK_CONSTANTS.DEV_API_KEY + ':' + CLICKBANK_CONSTANTS.USER_API.KEY
+	    }
+	  };
+
+	console.log('About to request Clickbank [using API KEY from ' + CLICKBANK_CONSTANTS.USER_API.TYPE + ']: ' + JSON.stringify(options)); 
+
+	//var clickbankResult; 
+	var cbreq = https.request(options, function(resCB) {
+		  console.log('RESP STATUS: ' + resCB.statusCode);
+		  console.log('RESP HEADERS: ' + JSON.stringify(resCB.headers));
+		  resCB.setEncoding('utf8');
+		  resCB.on('data', function (chunk) {
+		   console.log('BODY unparsed ' + chunk);
+		   // ==> TROP LONG, le chunk est coupé au milieu donc le JSON peut pas être interprete, c'est pourri 
+		   //var chunkJson = JSON.parse(chunk);
+		    //console.log('BODY: ' + chunkJson);
+		    //console.log('ROW: ' + chunkJson.data.row);		    
+		    //console.log('ROW2: ' + chunkJson.data.row[0]);
+		    callback(chunk);
+		  });
+		});
+	
+	cbreq.on('error', function(e) {
+	  console.log('problem with request: ' + e);
+	});
+	
+	cbreq.end();
+};
+
 var clickbankDetail = function(date_interval,callback){
 
 	var clickbankQueryData = {
 		startDate 	: date_interval.start,
 		endDate		: date_interval.end,
-		account 	: CLICKBANK_CONSTANTS.ACCOUNT,
-		summaryType : 'AFFILIATE_ONLY' //à enlever
+		account 	: CLICKBANK_CONSTANTS.ACCOUNT/*,
+		summaryType : 'VENDOR_ONLY' //à enlever*/
 	};
 
 	var clickbankQueryString = querystring.stringify(clickbankQueryData);
@@ -245,7 +294,7 @@ app.get('/clickbank/sumup',function(req,res){
 		end : moment().format('YYYY-MM-DD')
 	}	
 
-	/*var one_month_ago = {
+	var one_month_ago = {
 		start :  moment().subtract(1,'month').startOf('month').format('YYYY-MM-DD'),
 		end : moment().subtract(1,'month').endOf('month').format('YYYY-MM-DD'),
 		name: moment().subtract(1,'month').format('MMMM')
@@ -255,7 +304,7 @@ app.get('/clickbank/sumup',function(req,res){
 		start :  moment().subtract(2,'month').startOf('month').format('YYYY-MM-DD'),
 		end : moment().subtract(2,'month').endOf('month').format('YYYY-MM-DD'),
 		name: moment().subtract(2,'month').format('MMMM')
-	}	*/
+	}	
 
 	var today = {
 		start 	:  	moment().format('YYYY-MM-DD'),
@@ -272,6 +321,20 @@ app.get('/clickbank/sumup',function(req,res){
 	/* to make everything parallel, check Fiber and WAITFOR
 	https://github.com/luciotato/waitfor
 	https://github.com/laverdet/node-fibers
+	*/
+
+	/* 
+	https://api.clickbank.com/rest/1.3/analytics/affiliate/subscription/trends?account=nicdo77&startDate=2014-06-01&endDate=2014-10-10
+	{"totalCount":"3","data":{"row":[
+		{"avgActiveSubCnt":"2","avgSubAge":"34","avgSubValue":"39.1283","cancelSubCnt":"1","duration":"0","grossSales":"287.7","initialSaleAmt":"158.28","initialSaleCnt":"6","itemNo":"4","netSales":"287.7","nickname":"zcodesys","productId":"892422","recurringSaleAmt":"129.42","recurringSaleCnt":"5","totalSalesCnt":"11"},
+		{"avgActiveSubCnt":"3","avgSubAge":"44","avgSubValue":"60.5129","cancelSubCnt":"3","duration":"0","grossSales":"466.32","initialSaleAmt":"300.74","initialSaleCnt":"7","itemNo":"9","netSales":"466.32","nickname":"zcodesys","productId":"947658","recurringSaleAmt":"165.58","recurringSaleCnt":"4","totalSalesCnt":"11"},{"avgActiveSubCnt":"0","avgSubAge":"28","avgSubValue":"0","cancelSubCnt":"0","duration":"0","grossSales":"0","initialSaleAmt":"0","initialSaleCnt":"0","itemNo":"1","netSales":"0","nickname":"zcodesys","productId":"902023","recurringSaleAmt":"0","recurringSaleCnt":"0","totalSalesCnt":"0"}]}}
+	*/
+
+	/*
+	https://api.clickbank.com/rest/1.3/analytics/affiliate/subscription/details?account=nicdo77&orderBy=purchase_date&sortDirection=ASC
+	{"totalCount":"14","data":{"row":[
+		{"affNickName":"nicdo77","cancelled":"true","chargebackAmount":"0","chargebackCount":"0","customerDisplayName":"--","customerFirstName":"--","customerLastName":"--","duration":"999","frequency":"EVERY MONTH","ftxnId":"87096945","futurePaymentsCount":"998","initialSaleAmount":"250.6","initialSaleCount":"0","itemNo":"1","nextPaymentDate":"2012-09-28T00:00:00-07:00","processedPaymentsCount":"1","pubNickName":"zcodesys","purchaseDate":"2012-08-28T00:00:00-07:00","rebillSaleAmount":"0","rebillSaleCount":"0","receipt":"YPQCFECQ","refundAmount":"-250.6","refundCount":"1","status":"CANCELED","subCancelDate":"2012-09-25T00:00:00-07:00","subEndDate":"2095-09-28T00:00:00-07:00","subValue":"0"},
+		{"affNickName":"nicdo77","cancelled":"true","chargebackAmount":"0","chargebackCount":"0","customerDisplayName":"--","customerFirstName":"--","customerLastName":"--","duration":"999","frequency":"EVERY MONTH","ftxnId":"109868643","futurePaymentsCount":"996","initialSaleAmount":"62.74","initialSaleCount":"0","itemNo":"4","nextPaymentDate":"2014-09-14T00:00:00-07:00","processedPaymentsCount":"3","pubNickName":"zcodesys","purchaseDate":"2014-06-14T00:00:00-07:00","rebillSaleAmount":"125.04","rebillSaleCount":"0","receipt":"TRRLEK69","refundAmount":"-125.04","refundCount":"2","status":"CANCELED","subCancelDate":"2014-08-18T00:00:00-07:00","subEndDate":"2097-07-14T00:00:00-07:00","subValue":"26.86"},{"affNickName":"nicdo77","cancelled":"false","chargebackAmount":"0","chargebackCount":"0","customerDisplayName":"--","customerFirstName":"--","customerLastName":"--","duration":"999","frequency":"EVERY MONTH","ftxnId":"111443097","futurePaymentsCount":"996","initialSaleAmount":"100.32","initialSaleCount":"0","itemNo":"9","nextPaymentDate":"2014-10-11T00:00:00-07:00","processedPaymentsCount":"3","pubNickName":"zcodesys","purchaseDate":"2014-07-11T00:00:00-07:00","rebillSaleAmount":"194.07","rebillSaleCount":"0","receipt":"WLFDVETK","refundAmount":"0","refundCount":"0","status":"ACTIVE","subEndDate":"2097-08-11T00:00:00-07:00","subValue":"125.96"},{"affNickName":"nicdo77","cancelled":"false","chargebackAmount":"0","chargebackCount":"0","customerDisplayName":"--","customerFirstName":"--","customerLastName":"--","duration":"999","frequency":"EVERY MONTH","ftxnId":"112867378","futurePaymentsCount":"998","initialSaleAmount":"100.32","initialSaleCount":"0","itemNo":"9","nextPaymentDate":"2014-09-12T00:00:00-07:00","processedPaymentsCount":"1","pubNickName":"zcodesys","purchaseDate":"2014-08-12T00:00:00-07:00","rebillSaleAmount":"0","rebillSaleCount":"0","receipt":"LJYFVE85","refundAmount":"0","refundCount":"0","status":"ACTIVE","subEndDate":"2097-09-12T00:00:00-07:00","subValue":"42.73"},{"affNickName":"nicdo77","cancelled":"true","chargebackAmount":"0","chargebackCount":"0","customerDisplayName":"--","customerFirstName":"--","customerLastName":"--","duration":"999","frequency":"EVERY MONTH","ftxnId":"113120929","futurePaymentsCount":"998","initialSaleAmount":"79","initialSaleCount":"0","itemNo":"9","nextPaymentDate":"2014-10-03T00:00:00-07:00","processedPaymentsCount":"1","pubNickName":"zcodesys","purchaseDate":"2014-08-19T00:00:00-07:00","rebillSaleAmount":"0","rebillSaleCount":"0","receipt":"6ZHW89EF","refundAmount":"0","refundCount":"0","status":"CANCELED","subCancelDate":"2014-10-03T00:00:00-07:00","subEndDate":"2097-09-19T00:00:00-07:00","subValue":"43.25"},{"affNickName":"nicdo77","cancelled":"false","chargebackAmount":"0","chargebackCount":"0","customerDisplayName":"--","customerFirstName":"--","customerLastName":"--","duration":"999","frequency":"EVERY MONTH","ftxnId":"113192212","futurePaymentsCount":"997","initialSaleAmount":"62.22","initialSaleCount":"0","itemNo":"4","nextPaymentDate":"2014-10-20T00:00:00-07:00","processedPaymentsCount":"2","pubNickName":"zcodesys","purchaseDate":"2014-08-20T00:00:00-07:00","rebillSaleAmount":"60.24","rebillSaleCount":"0","receipt":"7CMW8TEQ","refundAmount":"0","refundCount":"0","status":"ACTIVE","subEndDate":"2097-09-20T00:00:00-07:00","subValue":"51.7"},{"affNickName":"nicdo77","cancelled":"false","chargebackAmount":"0","chargebackCount":"0","customerDisplayName":"--","customerFirstName":"--","customerLastName":"--","duration":"999","frequency":"EVERY MONTH","ftxnId":"113445634","futurePaymentsCount":"997","initialSaleAmount":"100.31","initialSaleCount":"0","itemNo":"9","nextPaymentDate":"2014-10-27T00:00:00-07:00","processedPaymentsCount":"2","pubNickName":"zcodesys","purchaseDate":"2014-08-27T00:00:00-07:00","rebillSaleAmount":"96.86","rebillSaleCount":"0","receipt":"9GNW8PEC","refundAmount":"0","refundCount":"0","status":"ACTIVE","subEndDate":"2097-09-27T00:00:00-07:00","subValue":"83.97"},{"affNickName":"nicdo77","cancelled":"false","chargebackAmount":"0","chargebackCount":"0","customerDisplayName":"--","customerFirstName":"--","customerLastName":"--","duration":"999","frequency":"EVERY MONTH","ftxnId":"113481140","futurePaymentsCount":"997","initialSaleAmount":"83.59","initialSaleCount":"0","itemNo":"9","nextPaymentDate":"2014-10-28T00:00:00-07:00","processedPaymentsCount":"2","pubNickName":"zcodesys","purchaseDate":"2014-08-28T00:00:00-07:00","rebillSaleAmount":"80.68","rebillSaleCount":"0","receipt":"57YW8QEZ","refundAmount":"0","refundCount":"0","status":"ACTIVE","subEndDate":"2097-09-28T00:00:00-07:00","subValue":"84.95"},{"affNickName":"nicdo77","cancelled":"false","chargebackAmount":"0","chargebackCount":"0","customerDisplayName":"--","customerFirstName":"--","customerLastName":"--","duration":"999","frequency":"EVERY MONTH","ftxnId":"113500399","futurePaymentsCount":"997","initialSaleAmount":"62.22","initialSaleCount":"0","itemNo":"4","nextPaymentDate":"2014-10-29T00:00:00-07:00","processedPaymentsCount":"2","pubNickName":"zcodesys","purchaseDate":"2014-08-29T00:00:00-07:00","rebillSaleAmount":"59.91","rebillSaleCount":"0","receipt":"PJTKE7MX","refundAmount":"0","refundCount":"0","status":"ACTIVE","subEndDate":"2097-09-29T00:00:00-07:00","subValue":"51.56"},{"affNickName":"nicdo77","cancelled":"false","chargebackAmount":"0","chargebackCount":"0","customerDisplayName":"--","customerFirstName":"--","customerLastName":"--","duration":"999","frequency":"EVERY MONTH","ftxnId":"113947118","futurePaymentsCount":"997","initialSaleAmount":"62.23","initialSaleCount":"0","itemNo":"4","nextPaymentDate":"2014-11-09T00:00:00-08:00","processedPaymentsCount":"2","pubNickName":"zcodesys","purchaseDate":"2014-09-09T00:00:00-07:00","rebillSaleAmount":"61.09","rebillSaleCount":"0","receipt":"SG3KE74P","refundAmount":"0","refundCount":"0","status":"ACTIVE","subEndDate":"2097-10-09T00:00:00-07:00","subValue":"52.08"},{"affNickName":"nicdo77","cancelled":"true","chargebackAmount":"0","chargebackCount":"0","customerDisplayName":"--","customerFirstName":"--","customerLastName":"--","duration":"999","frequency":"EVERY MONTH","ftxnId":"114079217","futurePaymentsCount":"998","initialSaleAmount":"100.31","initialSaleCount":"0","itemNo":"9","nextPaymentDate":"2014-10-13T00:00:00-07:00","processedPaymentsCount":"1","pubNickName":"zcodesys","purchaseDate":"2014-09-13T00:00:00-07:00","rebillSaleAmount":"0","rebillSaleCount":"0","receipt":"62368ZEG","refundAmount":"-100.31","refundCount":"1","status":"CANCELED","subCancelDate":"2014-10-02T00:00:00-07:00","subEndDate":"2097-10-13T00:00:00-07:00","subValue":"0"},{"affNickName":"nicdo77","cancelled":"false","chargebackAmount":"0","chargebackCount":"0","customerDisplayName":"--","customerFirstName":"--","customerLastName":"--","duration":"999","frequency":"EVERY MONTH","ftxnId":"114574632","futurePaymentsCount":"998","initialSaleAmount":"62.23","initialSaleCount":"0","itemNo":"4","nextPaymentDate":"2014-10-25T00:00:00-07:00","processedPaymentsCount":"1","pubNickName":"zcodesys","purchaseDate":"2014-09-25T00:00:00-07:00","rebillSaleAmount":"0","rebillSaleCount":"0","receipt":"VNK88PEJ","refundAmount":"0","refundCount":"0","status":"ACTIVE","subEndDate":"2097-10-25T00:00:00-07:00","subValue":"26.29"},{"affNickName":"nicdo77","cancelled":"true","chargebackAmount":"0","chargebackCount":"0","customerDisplayName":"--","customerFirstName":"--","customerLastName":"--","duration":"999","frequency":"EVERY MONTH","ftxnId":"114690809","futurePaymentsCount":"998","initialSaleAmount":"100.31","initialSaleCount":"0","itemNo":"9","nextPaymentDate":"2014-10-29T00:00:00-07:00","processedPaymentsCount":"1","pubNickName":"zcodesys","purchaseDate":"2014-09-29T00:00:00-07:00","rebillSaleAmount":"0","rebillSaleCount":"0","receipt":"SX87E7CQ","refundAmount":"0","refundCount":"0","status":"CANCELED","subCancelDate":"2014-10-08T00:00:00-07:00","subEndDate":"2097-10-29T00:00:00-07:00","subValue":"42.73"},{"affNickName":"nicdo77","cancelled":"false","chargebackAmount":"0","chargebackCount":"0","customerDisplayName":"--","customerFirstName":"--","customerLastName":"--","duration":"999","frequency":"EVERY MONTH","ftxnId":"115116276","futurePaymentsCount":"998","initialSaleAmount":"62.22","initialSaleCount":"0","itemNo":"4","nextPaymentDate":"2014-11-09T00:00:00-08:00","processedPaymentsCount":"1","pubNickName":"zcodesys","purchaseDate":"2014-10-09T00:00:00-07:00","rebillSaleAmount":"0","rebillSaleCount":"0","receipt":"QCV2E7RS","refundAmount":"0","refundCount":"0","status":"ACTIVE","subEndDate":"2097-11-09T00:00:00-08:00","subValue":"26.28"}]}}
 	*/
 	
 	function allData(){
@@ -309,15 +372,22 @@ app.get('/clickbank/sumup',function(req,res){
 		console.log('Clickbank ALL TIME result: ' + all_time.result);
 		if (--queriesToBeDone === 0) allData();
 	});
-
+	/*clickbankAlltime(function(result){
+		all_time.result = JSON.parse(result);
+		console.log('Clickbank ALL TIME result: ' + all_time.result);
+		if (--queriesToBeDone === 0) allData();
+	})*/
 	
 
-
-	
-
-	/*clickbankDetail(one_month_ago,function(result){
+	/* DETAIL with DETAIL_PATH : '/rest/1.3/analytics/affiliate/affiliate', no funciona
+	clickbankDetail(one_month_ago,function(result){
 		one_month_ago.result = result;
 		console.log('Clickbank LAST MONTH result: ' + one_month_ago.result);
+	});
+
+	clickbankDetail(two_month_ago,function(result){
+		two_month_ago.result = result;
+		console.log('Clickbank TWO MONTHS AGO result: ' + two_month_ago.result);
 	});*/
 
 })
@@ -374,7 +444,12 @@ app.get('/oauth2callback/google',function(req,res){
  ]
 }
 
+Last test done: Google OAUTH CALLBACK
+Google OAUTH code authorization : 4/iXuBxZGxLBKR-gWaYF1-FfqDe6F0.cvmZ6BkXWvwWPvB8fYmgkJx9OXQekQI
+Google OAUTH result LIST: [object Object]
+Publisher name : pub-6163954883404250
 
+Mais c'est étrange, il fuat aller plusieurs fois sur la url auth pour que ca marche....
 
 		*/
 	});
