@@ -1,6 +1,6 @@
 {
 	"name"			:	"node-todo",
-	"version"		:	"0.0.0",
+	"version"		:	"0.0.1",
 	"description"	:	"Simple todo application by Scotch.io",
 	"main"			:	"server.js",
 	"author"		:	"Scotch",
@@ -12,6 +12,7 @@
 		"body-parser": "~1.5.2",
 		"method-override": "~2.1.2",
 		"moment"	 : "*",
-		"googleapis" : "*"
+		"googleapis" : "*",
+		"array.prototype.find" : "*"
     }
 }

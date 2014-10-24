@@ -11,6 +11,7 @@ var fs = require('fs');
 var moment = require('moment');
 var querystring = require('querystring');
 var google = require('googleapis');
+require('array.prototype.find');
 
 // CLICKBANK CONSTANTS
 var CLICKBANK_CONSTANTS = {
@@ -337,6 +338,11 @@ app.get('/clickbank/sumup',function(req,res){
 		end 	: 	moment().subtract(1,'day').format('YYYY-MM-DD')
 	}
 
+	var two_days_ago = {
+		start 	:  	moment().subtract(2,'day').format('YYYY-MM-DD'),
+		end 	: 	moment().subtract(2,'day').format('YYYY-MM-DD')
+	}
+
 	var all_time = {
 		start 	:  	'2014-06-01',
 		end 	: 	moment().subtract(1,'day').format('YYYY-MM-DD')
@@ -376,30 +382,57 @@ app.get('/clickbank/sumup',function(req,res){
 		res.send({
 			today: today,
 			yesterday: yesterday,
-			all_time: all_time,
+			two_days_ago: two_days_ago,
 			current_month: current_month
 		});
 	}
 
-	var queriesToBeDone = 6; 
-	clickbankQuick(current_month,function(result){
-		current_month.result = JSON.parse(result);
+	var queriesToBeDone = 4; 
+
+
+	function parseClickbankResult(result){
+		var resultJson = JSON.parse(result);
+		if (resultJson == null){
+			result = {
+				sale : 0,
+				refund : 0,
+				chargeback : 0
+			};
+		} else{
+			result = {
+				sale : resultJson.accountData.quickStats.sale,
+				refund : resultJson.accountData.quickStats.refund,
+				chargeback : resultJson.accountData.quickStats.chargeback
+			};
+		}
+		return result;
+
+	}
+	clickbankQuick(current_month,function(result){		
+		current_month.result = parseClickbankResult(result);
 		console.log('Clickbank MONTH result: ' + current_month.result);
 		if (--queriesToBeDone === 0) allData();
 
 	});
 
 	clickbankQuick(today,function(result){
-		today.result = JSON.parse(result);
+		today.result = parseClickbankResult(result);
 		console.log('Clickbank TODAY result: ' + today.result);
 		if (--queriesToBeDone === 0) allData();
 	});
 
 	clickbankQuick(yesterday,function(result){
-		yesterday.result = JSON.parse(result);
+		yesterday.result = parseClickbankResult(result);
 		console.log('Clickbank YESTERDAY result: ' + yesterday.result);
 		if (--queriesToBeDone === 0) allData();
 	});
+
+	clickbankQuick(two_days_ago,function(result){
+		two_days_ago.result = parseClickbankResult(result);
+		console.log('Clickbank TWO_DAYS_AGO result: ' + two_days_ago.result);
+		if (--queriesToBeDone === 0) allData();
+	});
+
 	/**
 	clickbankQuick(all_time,function(result){
 		all_time.result = JSON.parse(result);
@@ -408,14 +441,17 @@ app.get('/clickbank/sumup',function(req,res){
 	});
 	*/
 	
+	/** TRY AGAIN
 	clickbankAlltime(all_time,function(result){
 		all_time.result = JSON.parse(result);
 		console.log('Clickbank ALL TIME result: ' + all_time.result);
 		if (--queriesToBeDone === 0) allData();
 	})
+	*/
 	
 
 	/* DETAIL with DETAIL_PATH : '/rest/1.3/analytics/affiliate/affiliate', no funciona */
+	/*
 	clickbankQuick(one_month_ago,function(result){
 		one_month_ago.result = result;
 		console.log('Clickbank LAST MONTH result: ' + one_month_ago.result);
@@ -425,12 +461,13 @@ app.get('/clickbank/sumup',function(req,res){
 		two_month_ago.result = result;
 		console.log('Clickbank TWO MONTHS AGO result: ' + two_month_ago.result);
 	});
+*/
 
 })
 
 app.get('/google/oauth',function(req,res){
 
-	console.log('Google OAUTH START');
+	console.log(moment().format('YYYY-MM-DD hh:mm:ss') + ' Google OAUTH START');
 	
 
 		// generate a url that asks permissions for Google+ and Google Calendar scopes
@@ -444,12 +481,12 @@ app.get('/google/oauth',function(req,res){
 	})
 
 	console.log('Google OAuth url generated : ' + url);
-	res.redirect(url);
+	res.send(url);
 
 })
 
 app.get('/oauth2callback/google',function(req,res){
-	console.log('Google OAUTH CALLBACK ');
+	console.log(moment().format('YYYY-MM-DD hh:mm:ss') + ' Start Google OAUTH CALLBACK');
 	
 	var authCode = req.param('code');
 	console.log('Google OAUTH code authorization : ' + authCode);
@@ -459,6 +496,12 @@ app.get('/oauth2callback/google',function(req,res){
 			oauth2Client.setCredentials(tokens);
 		}
 	})
+
+	console.log(moment().format('YYYY-MM-DD hh:mm:ss') + ' End Google OAUTH CALLBACK');
+})
+
+app.get('/google/adsense',function(req,res){
+	console.log(moment().format('YYYY-MM-DD hh:mm:ss') + ' Start Google REPORT');
 
 	var adsense = google.adsense('v1.4');
 	adsense.accounts.list({auth:oauth2Client} , function(err,response){
@@ -495,13 +538,33 @@ Mais c'est étrange, il fuat aller plusieurs fois sur la url auth pour que ca ma
 
 			var accountId = response.items[0].id;
 
+			var today = {
+				start 	:  	moment().format('YYYY-MM-DD'),
+				end 	: 	moment().format('YYYY-MM-DD')
+			}
+
+			var yesterday = {
+				start 	:  	moment().subtract(1,'day').format('YYYY-MM-DD'),
+				end 	: 	moment().subtract(1,'day').format('YYYY-MM-DD')
+			}
+
+			var two_days_ago = {
+				start 	:  	moment().subtract(2,'day').format('YYYY-MM-DD'),
+				end 	: 	moment().subtract(2,'day').format('YYYY-MM-DD')
+			}
+
+			var current_month = {
+				start :  moment().startOf('month').format('YYYY-MM-DD'),
+				end : moment().format('YYYY-MM-DD')
+			}
+
 			var reportParams = {
 				accountId : response.items[0].id,
 				auth : oauth2Client,
-				startDate:'2014-10-09',
-				endDate:'2014-10-12',
+				startDate: current_month.start,
+				endDate: current_month.end,
 				dimension:'DATE',
-				metrics:'EARNINGS'
+				metric:'EARNINGS'
 			}
 
 			adsense.accounts.reports.generate(reportParams, function(errReport,response){
@@ -511,11 +574,33 @@ Mais c'est étrange, il fuat aller plusieurs fois sur la url auth pour que ca ma
 				} else {
 					console.log('Google Reports Response: ' + response);
 					console.log('Google Reports Response JSON: ' + JSON.stringify(response));
+
+					console.log('Google Reports Rows : ' + response.rows);
+					
+					var todayValue = response.rows.find(function(a) { return a[0] === today.start;})
+					console.log('Google Report Todays earnings: ' + todayValue[1]);
+
+					var yesterdayValue = response.rows.find(function(a) { return a[0] === yesterday.start;})
+					console.log('Google Report Yesterdays earnings : ' + yesterdayValue[1]);
+
+					var twoDaysAgoValue = response.rows.find(function(a) { return a[0] === two_days_ago.start;})
+					console.log('Google Report Two Days Ago earnings : ' + twoDaysAgoValue[1]);
+
+					var monthValue = response.totals[1];
+					console.log('Google Report Total Months earnings : ' + monthValue);
+
+					res.send({
+						today: todayValue[1],
+						yesterday: yesterdayValue[1],
+						two_days_ago: twoDaysAgoValue[1],
+						current_month: monthValue
+					});
 				}
 			});
 		}
 	});
 	
+	console.log(moment().format('YYYY-MM-DD hh:mm:ss') + ' End Google REPORT');
 
 	//res.redirect('/');
 })

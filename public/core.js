@@ -106,16 +106,29 @@ function mainController($scope, $http){
 
 	$scope.getGoogleAdsenseData = function(){
 		console.log('getGoogleAdsenseData BEGIN');		
+			$http.get('/google/adsense')
+				.success(function(data){					
+					console.log('getGoogleAdsenseData Successfull call');
+					console.log('getGoogleAdsenseData REPORTS : '+ (JSON.stringify(data)));
+					$scope.adsenseData = data;
+				})
+				.error(function(data){
+					console.log('getGoogleAdsenseData ERROR');
+				});
 	}
 
 	$scope.connectGoogle = function(){
 		console.log('connectGoogle BEGIN');
 		$http.get('/google/oauth')
 				.success(function(data){					
-					console.log('connectGoogle Successfull auth');					
+					console.log('connectGoogle Successfull auth');
+					console.log('connectGoogle OAuth2 URL generated : '+ data);
+					$scope.oauthUrl = data;
 				})
 				.error(function(data){
-					console.log('connectGoogle ERROR');
+					console.log('connectGoogle ERROR AUTH');
+					console.log('connectGoogle OAuth2 URL generated : '+ data);
+					$scope.oauthUrl = data;
 				});
 	}
 }
