@@ -19,6 +19,7 @@ var CLICKBANK_CONSTANTS = {
  	//DETAIL_PATH : '/rest/1.3/analytics/affiliate/subscription/trends',
  	DETAIL_PATH : '/rest/1.3/analytics/affiliate/affiliate',
  	SUBS_DETAIL_PATH: '/rest/1.3/analytics/affiliate/subscription/details',
+ 	TRENDS_PATH: '/rest/1.3/analytics/affiliate/subscription/trends',
  	DEV_API_KEY : 'DEV-8Q6RMJUSUOCR3PRFF2QUGF1JGQ575UO2',
 	USER_API : {
 		TYPE 	:'master',
@@ -194,21 +195,30 @@ var clickbankQuick = function(date_interval,callback){
 	cbreq.end();
 };
 
-var clickbankAlltime = function(callback){
+	/*
+	https://api.clickbank.com/rest/1.3/analytics/affiliate/subscription/trends?account=nicdo77&startDate=2014-06-01&endDate=2014-10-20
+	{"totalCount":"3","data":{"row":[
+		{"avgActiveSubCnt":"3","avgSubAge":"47","avgSubValue":"54.4086","cancelSubCnt":"5","duration":"0","grossSales":"466.32","initialSaleAmt":"300.74","initialSaleCnt":"7","itemNo":"9","netSales":"466.32","nickname":"zcodesys","productId":"947658","recurringSaleAmt":"165.58","recurringSaleCnt":"4","totalSalesCnt":"11"},
+		{"avgActiveSubCnt":"2","avgSubAge":"37","avgSubValue":"29.8529","cancelSubCnt":"3","duration":"0","grossSales":"313.98","initialSaleAmt":"184.56","initialSaleCnt":"7","itemNo":"4","netSales":"313.98","nickname":"zcodesys","productId":"892422","recurringSaleAmt":"129.42","recurringSaleCnt":"5","totalSalesCnt":"12"},
+		{"avgActiveSubCnt":"0","avgSubAge":"28","avgSubValue":"0","cancelSubCnt":"0","duration":"0","grossSales":"0","initialSaleAmt":"0","initialSaleCnt":"0","itemNo":"1","netSales":"0","nickname":"zcodesys","productId":"902023","recurringSaleAmt":"0","recurringSaleCnt":"0","totalSalesCnt":"0"}]}}
+	*/
+var clickbankAlltime = function(date_interval,callback){
 
 	var clickbankQueryData = {		
-		account 	: CLICKBANK_CONSTANTS.ACCOUNT,
-		orderBy		: 'PURCHASE_DATE',
-		sortDirection : 'ASC' 
+		account 	: CLICKBANK_CONSTANTS.ACCOUNT 
 	};
 
+	if (date_interval.start != null){
+		clickbankQueryData.startDate = date_interval.start;
+		clickbankQueryData.endDate = date_interval.end;
+	}
 
 	var clickbankQueryString = querystring.stringify(clickbankQueryData);
 
 	var options = {
 	    host: CLICKBANK_CONSTANTS.HOST,	
 	    method: 'GET',
-	    path: CLICKBANK_CONSTANTS.SUBS_DETAIL_PATH + '?' + clickbankQueryString,
+	    path: CLICKBANK_CONSTANTS.TRENDS_PATH + '?' + clickbankQueryString,
 	    /*auth: dev_api_key + ':' + user_api_key,*/
 	    /*cert: fs.readFileSync('certs/clickbank.cer'),*/
 	    headers: {
@@ -226,11 +236,22 @@ var clickbankAlltime = function(callback){
 		  resCB.setEncoding('utf8');
 		  resCB.on('data', function (chunk) {
 		   console.log('BODY unparsed ' + chunk);
-		   // ==> TROP LONG, le chunk est coupé au milieu donc le JSON peut pas être interprete, c'est pourri 
-		   //var chunkJson = JSON.parse(chunk);
-		    //console.log('BODY: ' + chunkJson);
+		   // ==> TROP LONG, le chunk est coupé au milieu donc le JSON peut pas être interprete, c'est pourri et je sais pas comment fiare pour tout recevoir
+		   var chunkJson = JSON.parse(chunk);
+		   //var chunkJson = chunk;
+		    console.log('BODY: ' + chunkJson[0]);
 		    //console.log('ROW: ' + chunkJson.data.row);		    
-		    //console.log('ROW2: ' + chunkJson.data.row[0]);
+		    console.log('DATA: ' + JSON.stringify(chunkJson.data));		    
+		    //var dataJson = JSON.parse(chunkJson.data);
+		    //console.log('DATA JSON:' + dataJson)	    ;
+		    console.log('ROW: ' + JSON.stringify(chunkJson.data.row[0]));
+		    console.log('ROW2: ' + chunkJson.data.row[0].netSales);
+
+		    // sumando sales y refund
+
+
+
+
 		    callback(chunk);
 		  });
 		});
@@ -316,7 +337,10 @@ app.get('/clickbank/sumup',function(req,res){
 		end 	: 	moment().subtract(1,'day').format('YYYY-MM-DD')
 	}
 
-	var all_time = {}
+	var all_time = {
+		start 	:  	'2014-06-01',
+		end 	: 	moment().subtract(1,'day').format('YYYY-MM-DD')
+	}
 	
 	/* to make everything parallel, check Fiber and WAITFOR
 	https://github.com/luciotato/waitfor
@@ -327,10 +351,20 @@ app.get('/clickbank/sumup',function(req,res){
 	https://api.clickbank.com/rest/1.3/analytics/affiliate/subscription/trends?account=nicdo77&startDate=2014-06-01&endDate=2014-10-10
 	{"totalCount":"3","data":{"row":[
 		{"avgActiveSubCnt":"2","avgSubAge":"34","avgSubValue":"39.1283","cancelSubCnt":"1","duration":"0","grossSales":"287.7","initialSaleAmt":"158.28","initialSaleCnt":"6","itemNo":"4","netSales":"287.7","nickname":"zcodesys","productId":"892422","recurringSaleAmt":"129.42","recurringSaleCnt":"5","totalSalesCnt":"11"},
-		{"avgActiveSubCnt":"3","avgSubAge":"44","avgSubValue":"60.5129","cancelSubCnt":"3","duration":"0","grossSales":"466.32","initialSaleAmt":"300.74","initialSaleCnt":"7","itemNo":"9","netSales":"466.32","nickname":"zcodesys","productId":"947658","recurringSaleAmt":"165.58","recurringSaleCnt":"4","totalSalesCnt":"11"},{"avgActiveSubCnt":"0","avgSubAge":"28","avgSubValue":"0","cancelSubCnt":"0","duration":"0","grossSales":"0","initialSaleAmt":"0","initialSaleCnt":"0","itemNo":"1","netSales":"0","nickname":"zcodesys","productId":"902023","recurringSaleAmt":"0","recurringSaleCnt":"0","totalSalesCnt":"0"}]}}
+		{"avgActiveSubCnt":"3","avgSubAge":"44","avgSubValue":"60.5129","cancelSubCnt":"3","duration":"0","grossSales":"466.32","initialSaleAmt":"300.74","initialSaleCnt":"7","itemNo":"9","netSales":"466.32","nickname":"zcodesys","productId":"947658","recurringSaleAmt":"165.58","recurringSaleCnt":"4","totalSalesCnt":"11"},
+		{"avgActiveSubCnt":"0","avgSubAge":"28","avgSubValue":"0","cancelSubCnt":"0","duration":"0","grossSales":"0","initialSaleAmt":"0","initialSaleCnt":"0","itemNo":"1","netSales":"0","nickname":"zcodesys","productId":"902023","recurringSaleAmt":"0","recurringSaleCnt":"0","totalSalesCnt":"0"}]}}
 	*/
 
 	/*
+	https://api.clickbank.com/rest/1.3/analytics/affiliate/subscription/trends?account=nicdo77&startDate=2014-06-01&endDate=2014-10-20
+	{"totalCount":"3","data":{"row":[
+		{"avgActiveSubCnt":"3","avgSubAge":"47","avgSubValue":"54.4086","cancelSubCnt":"5","duration":"0","grossSales":"466.32","initialSaleAmt":"300.74","initialSaleCnt":"7","itemNo":"9","netSales":"466.32","nickname":"zcodesys","productId":"947658","recurringSaleAmt":"165.58","recurringSaleCnt":"4","totalSalesCnt":"11"},
+		{"avgActiveSubCnt":"2","avgSubAge":"37","avgSubValue":"29.8529","cancelSubCnt":"3","duration":"0","grossSales":"313.98","initialSaleAmt":"184.56","initialSaleCnt":"7","itemNo":"4","netSales":"313.98","nickname":"zcodesys","productId":"892422","recurringSaleAmt":"129.42","recurringSaleCnt":"5","totalSalesCnt":"12"},
+		{"avgActiveSubCnt":"0","avgSubAge":"28","avgSubValue":"0","cancelSubCnt":"0","duration":"0","grossSales":"0","initialSaleAmt":"0","initialSaleCnt":"0","itemNo":"1","netSales":"0","nickname":"zcodesys","productId":"902023","recurringSaleAmt":"0","recurringSaleCnt":"0","totalSalesCnt":"0"}]}}
+	*/
+
+	/*
+
 	https://api.clickbank.com/rest/1.3/analytics/affiliate/subscription/details?account=nicdo77&orderBy=purchase_date&sortDirection=ASC
 	{"totalCount":"14","data":{"row":[
 		{"affNickName":"nicdo77","cancelled":"true","chargebackAmount":"0","chargebackCount":"0","customerDisplayName":"--","customerFirstName":"--","customerLastName":"--","duration":"999","frequency":"EVERY MONTH","ftxnId":"87096945","futurePaymentsCount":"998","initialSaleAmount":"250.6","initialSaleCount":"0","itemNo":"1","nextPaymentDate":"2012-09-28T00:00:00-07:00","processedPaymentsCount":"1","pubNickName":"zcodesys","purchaseDate":"2012-08-28T00:00:00-07:00","rebillSaleAmount":"0","rebillSaleCount":"0","receipt":"YPQCFECQ","refundAmount":"-250.6","refundCount":"1","status":"CANCELED","subCancelDate":"2012-09-25T00:00:00-07:00","subEndDate":"2095-09-28T00:00:00-07:00","subValue":"0"},
@@ -347,7 +381,7 @@ app.get('/clickbank/sumup',function(req,res){
 		});
 	}
 
-	var queriesToBeDone = 4; 
+	var queriesToBeDone = 6; 
 	clickbankQuick(current_month,function(result){
 		current_month.result = JSON.parse(result);
 		console.log('Clickbank MONTH result: ' + current_month.result);
@@ -366,29 +400,31 @@ app.get('/clickbank/sumup',function(req,res){
 		console.log('Clickbank YESTERDAY result: ' + yesterday.result);
 		if (--queriesToBeDone === 0) allData();
 	});
-
+	/**
 	clickbankQuick(all_time,function(result){
 		all_time.result = JSON.parse(result);
 		console.log('Clickbank ALL TIME result: ' + all_time.result);
 		if (--queriesToBeDone === 0) allData();
 	});
-	/*clickbankAlltime(function(result){
+	*/
+	
+	clickbankAlltime(all_time,function(result){
 		all_time.result = JSON.parse(result);
 		console.log('Clickbank ALL TIME result: ' + all_time.result);
 		if (--queriesToBeDone === 0) allData();
-	})*/
+	})
 	
 
-	/* DETAIL with DETAIL_PATH : '/rest/1.3/analytics/affiliate/affiliate', no funciona
-	clickbankDetail(one_month_ago,function(result){
+	/* DETAIL with DETAIL_PATH : '/rest/1.3/analytics/affiliate/affiliate', no funciona */
+	clickbankQuick(one_month_ago,function(result){
 		one_month_ago.result = result;
 		console.log('Clickbank LAST MONTH result: ' + one_month_ago.result);
 	});
 
-	clickbankDetail(two_month_ago,function(result){
+	clickbankQuick(two_month_ago,function(result){
 		two_month_ago.result = result;
 		console.log('Clickbank TWO MONTHS AGO result: ' + two_month_ago.result);
-	});*/
+	});
 
 })
 
@@ -426,8 +462,11 @@ app.get('/oauth2callback/google',function(req,res){
 
 	var adsense = google.adsense('v1.4');
 	adsense.accounts.list({auth:oauth2Client} , function(err,response){
-		console.log('Google OAUTH result LIST: ' + response);
-		console.log('Publisher name : ' + response.items[0].name);
+		if (err){
+			console.log('Error during callbak from Google to oauth2callback/google' + err);
+		} else {
+			console.log('Google OAUTH result LIST: ' + JSON.stringify(response));
+			console.log('Publisher name : ' + response.items[0].name);
 		/* voir https://console.developers.google.com/project/enhanced-digit-708/apiui/api/adsense/method/adsense.accounts.list
 		detail de account.list et executer pour voir le squelette
 {
@@ -452,6 +491,29 @@ Publisher name : pub-6163954883404250
 Mais c'est étrange, il fuat aller plusieurs fois sur la url auth pour que ca marche....
 
 		*/
+			console.log('Publisher id : ' + response.items[0].id);
+
+			var accountId = response.items[0].id;
+
+			var reportParams = {
+				accountId : response.items[0].id,
+				auth : oauth2Client,
+				startDate:'2014-10-09',
+				endDate:'2014-10-12',
+				dimension:'DATE',
+				metrics:'EARNINGS'
+			}
+
+			adsense.accounts.reports.generate(reportParams, function(errReport,response){
+				if (errReport){
+					console.log('Error while getting report: ' + errReport);
+					console.log('Error while getting report: ' + JSON.stringify(errReport));
+				} else {
+					console.log('Google Reports Response: ' + response);
+					console.log('Google Reports Response JSON: ' + JSON.stringify(response));
+				}
+			});
+		}
 	});
 	
 
