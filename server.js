@@ -51,7 +51,7 @@ var oauth2Client = new OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
 //var mongo = require('mongoskin');
 //var db = mongo.db("mongodb://ec2-54-183-136-164.us-west-1.compute.amazonaws.com:27017/scotchtodo",{native_parser:true});
 
-mongoose.connect('mongodb://ec2-54-183-136-164.us-west-1.compute.amazonaws.com:27017/scotchtodo'); 	// connect to mongoDB database
+var db = mongoose.connect('mongodb://ec2-54-183-136-164.us-west-1.compute.amazonaws.com:27017/scotchtodo'); 	// connect to mongoDB database
 
 
 app.use(express.static(__dirname + '/public')); // set the static files location /public/img will be /img for users
@@ -61,16 +61,16 @@ app.use(bodyParser.json()); // parse application/json
 app.use(bodyParser.json({type:'application/vnd.api+json'})); // parse application/vnd.api+json as json
 app.use(methodOverride());
 
+// Make our db accessible to our router
+app.use(function(req,res,next){
+    req.db = db;
+    next();
+})
 
-// Define model =============================
-var Todo = mongoose.model('Todo',{
-	text : String,
-	done: Boolean
-});
+
 
 // routes ======================================
-app.use('/api/', todojs);
-// check http://scotch.io/tutorials/javascript/learn-to-use-the-new-router-in-expressjs-4
+app.use('/', todojs);
 
 // api -----------------------------------
 

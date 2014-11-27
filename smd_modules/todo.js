@@ -1,11 +1,20 @@
 var express = require('express');
 var router = express.Router();
+var moment = require('moment');
+
 
 
 // get all TODOS
 router.get('/api/todos',function(req,res){
 
 	console.log(moment().format('YYYY-MM-DD hh:mm:ss') + ' Before retrieving Todos... ');
+
+
+	// Define model =============================
+	var Todo = req.db.model('Todo',{
+		text : String,
+		done: Boolean
+	});
 
 	Todo.find(function(err,todos){
 		if (err){
