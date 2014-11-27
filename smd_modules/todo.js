@@ -5,11 +5,14 @@ var router = express.Router();
 // get all TODOS
 router.get('/api/todos',function(req,res){
 
+	console.log(moment().format('YYYY-MM-DD hh:mm:ss') + ' Before retrieving Todos... ');
+
 	Todo.find(function(err,todos){
 		if (err){
+			console.log(moment().format('YYYY-MM-DD hh:mm:ss') + 'Error while retrieving Todos: ' + err);
 			res.send(err);
 		}
-		console.log("Number of todos found: " + todos.length);
+		console.log(moment().format('YYYY-MM-DD hh:mm:ss') + 'Number of todos found: ' + todos.length);
 		res.json(todos); // return all todos in JSON format
 
 	})

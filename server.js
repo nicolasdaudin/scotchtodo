@@ -69,6 +69,8 @@ var Todo = mongoose.model('Todo',{
 });
 
 // routes ======================================
+app.use('/api/', todojs);
+// check http://scotch.io/tutorials/javascript/learn-to-use-the-new-router-in-expressjs-4
 
 // api -----------------------------------
 
