@@ -87,7 +87,7 @@
 			"file": "public/core.js",
 			"settings":
 			{
-				"buffer_size": 4091,
+				"buffer_size": 4071,
 				"line_ending": "Windows"
 			}
 		},
@@ -96,7 +96,7 @@
 			"settings":
 			{
 				"buffer_size": 6197,
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -111,35 +111,71 @@
 			"file": "server.js",
 			"settings":
 			{
-				"buffer_size": 30653,
-				"line_ending": "Unix"
+				"buffer_size": 30368,
+				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "smd_modules/clickbank.js",
+			"file": "scotchtodo.sublime-workspace",
 			"settings":
 			{
-				"buffer_size": 0,
-				"line_ending": "Unix"
+				"buffer_size": 6707,
+				"line_ending": "Windows"
 			}
 		},
 		{
 			"file": "smd_modules/todo.js",
 			"settings":
 			{
-				"buffer_size": 2429,
+				"buffer_size": 2723,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/smd/dev/tutocwbrestful/app.js",
+			"settings":
+			{
+				"buffer_size": 1659,
 				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/C/smd/dev/tutocwbrestful/routes/index.js",
+			"settings":
+			{
+				"buffer_size": 199,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/C/smd/dev/tutocwbrestful/routes/users.js",
+			"settings":
+			{
+				"buffer_size": 1183,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/C/smd/dev/tutocwbrestful/public/javascripts/global.js",
+			"settings":
+			{
+				"buffer_size": 9531,
+				"line_ending": "Windows"
 			}
 		}
 	],
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 0.0,
+		"height": 58.0,
 		"selected_items":
 		[
+			[
+				"Pack",
+				"Preferences: Browse Packages"
+			]
 		],
-		"width": 0.0
+		"width": 392.0
 	},
 	"console":
 	{
@@ -156,11 +192,8 @@
 	},
 	"file_history":
 	[
-		"/Users/nicolasdaudin/dev/scotchtodo/scotchtodo.sublime-workspace",
-		"/Users/nicolasdaudin/dev/scotchtodo/certs/clickbank2.cer",
-		"/C/smd/dev/tutocwbrestful/app.js",
-		"/C/smd/dev/tutocwbrestful/routes/users.js",
-		"/C/smd/dev/tutocwbrestful/public/javascripts/global.js",
+		"/C/smd/dev/scotchtodo/certs/clickbank2.cer",
+		"/C/smd/dev/scotchtodo/smd_modules/clickbank.js",
 		"/C/smd/dev/scotchtodo/example-call-subscription-details2.json",
 		"/C/Windows/System32/drivers/etc/hosts",
 		"/C/smd/dev/scotchtodo/.gitignore",
@@ -215,7 +248,7 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 5,
 			"sheets":
 			[
 				{
@@ -223,15 +256,15 @@
 					"file": "public/core.js",
 					"settings":
 					{
-						"buffer_size": 4091,
+						"buffer_size": 4071,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1490,
-								1490
+								1946,
+								1946
 							]
 						],
 						"settings":
@@ -240,7 +273,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 630.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -257,8 +290,8 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								3339,
+								3339
 							]
 						],
 						"settings":
@@ -267,7 +300,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1485.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -304,15 +337,69 @@
 					"file": "server.js",
 					"settings":
 					{
-						"buffer_size": 30653,
+						"buffer_size": 30368,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								2601,
+								2601
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 294.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "scotchtodo.sublime-workspace",
+					"settings":
+					{
+						"buffer_size": 6707,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								46,
+								46
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "smd_modules/todo.js",
+					"settings":
+					{
+						"buffer_size": 2723,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								871,
+								871
 							]
 						],
 						"settings":
@@ -327,38 +414,39 @@
 					"type": "text"
 				},
 				{
-					"buffer": 4,
-					"file": "smd_modules/clickbank.js",
+					"buffer": 6,
+					"file": "/C/smd/dev/tutocwbrestful/app.js",
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 1659,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								920,
+								920
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 511.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "smd_modules/todo.js",
+					"buffer": 7,
+					"file": "/C/smd/dev/tutocwbrestful/routes/index.js",
 					"settings":
 					{
-						"buffer_size": 2429,
+						"buffer_size": 199,
 						"regions":
 						{
 						},
@@ -371,11 +459,63 @@
 						],
 						"settings":
 						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/C/smd/dev/tutocwbrestful/routes/users.js",
+					"settings":
+					{
+						"buffer_size": 1183,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								319,
+								340
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "/C/smd/dev/tutocwbrestful/public/javascripts/global.js",
+					"settings":
+					{
+						"buffer_size": 9531,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5469,
+								5469
+							]
+						],
+						"settings":
+						{
 							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 684.0,
+						"translation.y": 840.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

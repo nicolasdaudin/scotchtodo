@@ -2,19 +2,19 @@ var express = require('express');
 var router = express.Router();
 var moment = require('moment');
 
+var mongoose = require('mongoose');// mongoose for mongodb
+var db = mongoose.connect('mongodb://ec2-54-183-136-164.us-west-1.compute.amazonaws.com:27017/scotchtodo'); 	// connect to mongoDB database
 
+// Define model =============================
+var Todo = db.model('Todo',{
+	text : String,
+	done: Boolean
+});
 
 // get all TODOS
-router.get('/api/todos',function(req,res){
+router.get('/',function(req,res){
 
 	console.log(moment().format('YYYY-MM-DD hh:mm:ss') + ' Before retrieving Todos... ');
-
-
-	// Define model =============================
-	var Todo = req.db.model('Todo',{
-		text : String,
-		done: Boolean
-	});
 
 	Todo.find(function(err,todos){
 		if (err){
@@ -28,7 +28,7 @@ router.get('/api/todos',function(req,res){
 })
 
 // create todo and send back all todos after creation
-router.post('/api/todos',function(req,res){
+router.post('/',function(req,res){
 
 	Todo.create({
 		text: req.body.text,
@@ -50,7 +50,7 @@ router.post('/api/todos',function(req,res){
 });
 
 // update a TODO and send back all todos after creation
-router.post('/api/todos/:id',function(req,res){
+router.post('/:id',function(req,res){
 
 	Todo.update({_id:req.params.id},{text:req.body.text}, function(err,todo){
 		if (err){
@@ -68,7 +68,7 @@ router.post('/api/todos/:id',function(req,res){
 	});
 })
 
-router.post('/api/todos/switchcomplete/:id',function(req,res){	
+router.post('/switchcomplete/:id',function(req,res){	
 	Todo.findById(req.params.id,function(err,todo){
 		if (err){
 			res.send('Error while finding by id: ' + err);
@@ -94,7 +94,7 @@ router.post('/api/todos/switchcomplete/:id',function(req,res){
 })
 
 // delete a TODO using his id abnd send back all todos
-router.delete('/api/todos/:id',function(req,res){
+router.delete('/:id',function(req,res){
 	console.log('Trying to remove todo with id ' + req.params.id);
 	Todo.remove({_id:req.params.id}, function(err){
 		if (err){

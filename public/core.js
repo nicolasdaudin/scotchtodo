@@ -5,7 +5,7 @@ function mainController($scope, $http){
 	$scope.formData = {};	
 
 	// when landing on the page, ge tall todos and show them
-	$http.get('/api/todos')
+	$http.get('/todos')
 		.success(function(data){
 			$scope.todos = data;
 			console.log(JSON.stringify(data));
@@ -21,7 +21,7 @@ function mainController($scope, $http){
 		
 		if ($scope.formData._id == '' || $scope.formData._id == null){
 			console.log('Creating this TODO: ' + JSON.stringify($scope.formData));
-			$http.post('/api/todos',$scope.formData)
+			$http.post('/todos',$scope.formData)
 				.success(function(data){
 					$scope.formData = {}; // clear the form so our user is ready to enter another thing
 					$scope.todos = data;
@@ -32,7 +32,7 @@ function mainController($scope, $http){
 				});
 		} else {
 			console.log('Updating this TODO: ' + JSON.stringify($scope.formData));
-			$http.post('/api/todos/'+$scope.formData._id,$scope.formData)
+			$http.post('/todos/'+$scope.formData._id,$scope.formData)
 				.success(function(data){
 					$scope.formData = {}; // clear the form so our user is ready to enter another thing
 					$scope.todos = data;
@@ -47,7 +47,7 @@ function mainController($scope, $http){
 
 	// complete a todo
 	$scope.completeTodo = function(todoId){
-		$http.post('/api/todos/switchcomplete/'+todoId)
+		$http.post('/todos/switchcomplete/'+todoId)
 			.success(function(data){
 				$scope.formData = {}; // clear the form so our user is ready to enter another thing
 				$scope.todos = data;
@@ -60,7 +60,7 @@ function mainController($scope, $http){
 
 	// delete a todo
 	$scope.deleteTodo = function(todoId){
-		$http.delete('/api/todos/'+todoId)
+		$http.delete('/todos/'+todoId)
 			.success(function(data){
 				$scope.formData = {}; // clear the form so our user is ready to enter another thing
 				$scope.todos = data;
