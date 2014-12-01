@@ -18,10 +18,10 @@ var oauth2Client = new OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
 
 router.get('/oauth',function(req,res){
 
-	console.log(moment().format('YYYY-MM-DD hh:mm:ss') + ' Google OAUTH START');
+	console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google OAUTH START');
 	
 
-		// generate a url that asks permissions for Google+ and Google Calendar scopes
+	// generate a url that asks permissions for Google+ and Google Calendar scopes
 	var scopes = [
 	  'https://www.googleapis.com/auth/adsense'	  
 	];
@@ -37,7 +37,7 @@ router.get('/oauth',function(req,res){
 })
 
 router.get('/oauth2callback',function(req,res){
-	console.log(moment().format('YYYY-MM-DD hh:mm:ss') + ' Start Google OAUTH CALLBACK');
+	console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Start Google OAUTH CALLBACK');
 	
 	var authCode = req.param('code');
 	console.log('Google OAUTH code authorization : ' + authCode);
@@ -48,13 +48,13 @@ router.get('/oauth2callback',function(req,res){
 		}
 	})
 
-	console.log(moment().format('YYYY-MM-DD hh:mm:ss') + ' End Google OAUTH CALLBACK');
+	console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' End Google OAUTH CALLBACK');
 
 	res.redirect('/');
 })
 
 router.get('/adsense',function(req,res){
-	console.log(moment().format('YYYY-MM-DD hh:mm:ss') + ' Start Google REPORT');
+	console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Start Google REPORT');
 
 	var adsense = google.adsense('v1.4');
 	adsense.accounts.list({auth:oauth2Client} , function(err,response){
