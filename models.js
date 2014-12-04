@@ -7,7 +7,12 @@ var Todo = db.model('Todo',{
 	text : String,
 	done: Boolean
 });
-
-
-
 module.exports.Todo = Todo;
+
+var UserProfile = db.model('UserProfile',{
+	email : String,
+	googleToken : String
+});
+
+
+module.exports.UserProfile = UserProfile;
