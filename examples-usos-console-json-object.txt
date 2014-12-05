@@ -1,0 +1,102 @@
+Exemple 1 : OAuth2Client.getToken(...,function(err,token))
+##########################################################
+
+Code:
+console.log(' Google Token is : ' + JSON.stringify(token));
+console.log(' Google Token is : ' + token);
+
+Logs:
+Google Token is : {"access_token":"ya29.0wAJUZBauQNGt_rwytgGB8qsBuYy7fHsd4uOvhTIU4W7_j5lh002h_zDxHX3F9W69c5Kcy
+uv-AweJQ","token_type":"Bearer","expiry_date":1417819803358}
+Google Token is : [object Object]
+
+Exemple 2: UserProfile.find(....,function(err,profiles)) ==> profiles
+#####################################################################
+
+Code:
+console.log(' Profiles: ' + profiles);
+console.log(' Profiles stringify: ' + JSON.stringify(profiles));	
+
+Log:
+Profiles: { _id: 547fdef1ed6e0aa091ea6b9e,  email: 'nicolas.daudin@gmail.com',
+  googleToken:   { expiry_date: 1417819472769,     token_type: 'Bearer',
+     access_token: 'ya29.0wD-qKq2lcR3e65IVKqDCrmAz5fgpKYOLr8vxwDPHL6rdDScnu6OtMwVCuzfzsCPnOED2VEv98DNIA' } }
+Profiles stringify: [{"_id":"547fdef1ed6e0aa091ea6b9e","email":"nicolas.daudin@gmail.com", "googleToken":{"expiry_date":1417819472769,"token_type":"Bearer","access_token":"ya29.0wD-qKq2lcR3e65IVKqDCrmAz5fgpKYOLr8vxwDPHL6rdDScnu6OtMwVCuzfzsCPnOED2VEv98DNIA"}}]
+
+Exemple 3: UserProfile.find(....,function(err,profiles)) ==> profiles[0]
+#####################################################################
+
+Code:
+console.log(' Profiles[0]: ' + profiles[0]);
+console.log(' Profiles[0] stringify: ' + JSON.stringify(profiles[0]));
+
+Log:
+Profiles[0]: { _id: 547fdef1ed6e0aa091ea6b9e,  email: 'nicolas.daudin@gmail.com',
+  googleToken:   { expiry_date: 1417819472769,     token_type: 'Bearer',
+     access_token: 'ya29.0wD-qKq2lcR3e65IVKqDCrmAz5fgpKYOLr8vxwDPHL6rdDScnu6OtMwVCuzfzsCPnOED2VEv98DNIA' } }
+Profiles[0] stringify: {"_id":"547fdef1ed6e0aa091ea6b9e","email":"nicolas.daudin@gmail.com","googleToken":{"expiry_date"
+:1417819472769,"token_type":"Bearer","access_token":"ya29.0wD-qKq2lcR3e65IVKqDCrmAz5fgpKYOLr8vxwDPHL6rdDScnu6OtMwVCuzfzsCPnOED2VEv98DNIA"}}
+
+Exemple 4: UserProfile.find(....,function(err,profiles)) ==> profiles[0].googleToken
+#####################################################################################
+
+Code:
+console.log(' User with Google credentials: ' + profiles[0].googleToken);
+console.log(' User with Google credentials stringify: ' + JSON.stringify(profiles[0].googleToken));
+
+Log:
+User with Google credentials: [object Object]
+User with Google credentials: {"access_token":"ya29.0wD-qKq2lcR3e65IVKqDCrmAz5fgpKYOLr8vxwDPHL6rdDScnu6OtMwVCu
+zfzsCPnOED2VEv98DNIA","token_type":"Bearer","expiry_date":1417819472769}
+
+Exemple 5: UserProfile.find(....,function(err,profiles)) ==> profiles[0].email
+#####################################################################################
+
+Code:
+console.log(' User with email: ' + profiles[0].email);
+console.log(' User with email: ' + JSON.stringify(profiles[0].email));
+
+Log:
+User with email: nicolas.daudin@gmail.com
+User with email: "nicolas.daudin@gmail.com"
+
+==> profiles.email, profiles.googleToken will give undefined.
+
+Exemple 5: UserProfile.find(....,function(err,profiles)) ==> Type()
+#####################################################################################
+
+Code:
+console.log('Type of profiles : ' + Type.string(profiles));
+console.log('Type of profiles[0] : ' + Type.string(profiles[0]));
+console.log('Type of google token : ' + Type.string(profiles[0].googleToken));
+
+Log
+Type of profiles : Array
+Type of profiles[0] : model
+Type of google token : Object
+
+Exemple 6: oauth2Client.setCredentials(profiles[0].googleToken); ==> 0auth2client
+#####################################################################################
+
+Code:
+console.log(' OAuth2Client : ' + oauth2Client);
+console.log(' OAuth2Client stringify: ' + JSON.stringify(oauth2Client));
+
+Log:
+2014-12-05 15:50:04 OAuth2Client : [object Object]
+2014-12-05 15:50:04 OAuth2Client stringify: {"transporter":{},"clientId_":"619973237257-ud5ujht6btm8njnfq6v158sm27abr5nn.apps.googleusercon
+tent.com","clientSecret_":"O-b4w10_tnK96SUG9tpdDYxS","redirectUri_":"http://localhost:8080/google/oauth2callback/","opts":{},"cred
+entials":{"access_token":"ya29.0wD-qKq2lcR3e65IVKqDCrmAz5fgpKYOLr8vxwDPHL6rdDScnu6OtMwVCuzfzsCPnOED2VEv98DNIA","token_type":"Beare
+r","expiry_date":1417819472769}}
+
+Exemple 7: oauth2Client.setCredentials(profiles[0].googleToken); ==> oauth2client.credentials
+#####################################################################################
+		
+Code:
+console.log(' OAuth2Client.credentials: ' + oauth2Client.credentials);
+console.log(' OAuth2Client.credentials stringify: ' + JSON.stringify(oauth2Client.credentials));
+		
+Log:
+OAuth2Client.credentials: [object Object]
+OAuth2Client.credentials stringify: {"access_token":"ya29.0wD-qKq2lcR3e65IVKqDCrmAz5fgpKYOLr8vxwDPHL6rdDScnu6OtMwVCuzfzs
+CPnOED2VEv98DNIA","token_type":"Bearer","expiry_date":1417819472769}
