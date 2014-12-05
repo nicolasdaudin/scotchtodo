@@ -3,7 +3,10 @@ var router = express.Router();
 var moment = require('moment');
 var util = require("util");
 
+var Type = require('type-of-is');
+
 var google = require('googleapis');
+
 require('array.prototype.find');
 
 var UserProfile = require('../models.js').UserProfile;
@@ -80,10 +83,14 @@ router.get('/adsense',function(req,res){
 			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error while retrieving User Profile: ' + err);
 		}
 
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Profiles: ' + profiles[0]);
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with Google credentials: ' + JSON.stringify(profiles[0].googleToken));
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Profiles[0]: ' + profiles[0]);
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with Google credentials: ' + profiles[0].googleToken);
 		//console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with refresh_token: ' + profiles[0].googleToken.refresh_token);
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with email: ' + JSON.stringify(profiles[0].email));
+
+		console.log('Type of profiles : ' + Type.string(profiles));
+		console.log('Type of profiles[0] : ' + Type.string(profiles[0]));
+		console.log('Type of google token : ' + Type.string(profiles[0].googleToken));
 
 		oauth2Client.setCredentials(profiles[0].googleToken);
 		//https://developers.google.com/accounts/docs/OAuth2WebServer
@@ -93,9 +100,8 @@ router.get('/adsense',function(req,res){
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client.credentials: ' + JSON.stringify(oauth2Client.credentials));
 		//console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client.credentials: ' + JSON.parse(oauth2Client.credentials));
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client.credentials: ' + oauth2Client.credentials);
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client.credentials: ' + util.inspect(oauth2Client.credentials,{depth:null}));
-		console.dir(oauth2Client);
-		console.dir(oauth2Client.credentials);
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client credentials inspect: ' + util.inspect(oauth2Client.credentials,{showHidden: true, depth:null}));
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client inspect: ' + util.inspect(oauth2Client.credentials,{showHidden: true, depth:null}));
 		
 		/*2014-12-04 17:14:24 OAuth2Client.credentials: "[object Object]"
 2014-12-04 17:14:24 OAuth2Client.credentials: [object Object]
