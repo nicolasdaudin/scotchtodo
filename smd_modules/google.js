@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var moment = require('moment');
+var util = require("util");
 
 var google = require('googleapis');
 require('array.prototype.find');
@@ -50,9 +51,9 @@ router.get('/oauth2callback',function(req,res){
 
 	oauth2Client.getToken(authCode, function(err, token){
 		if (!err){
-			oauth2Client.setCredentials(token);
+			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google Token is : ' + JSON.stringify(token));
 
-			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google Token is : ' + token);
+			oauth2Client.setCredentials(token);			
 			
 			// storing it
 			UserProfile.update({email:email},{googleToken:token}, function(err,todo){
@@ -79,12 +80,34 @@ router.get('/adsense',function(req,res){
 			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error while retrieving User Profile: ' + err);
 		}
 
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Profiles: ' + profile[s0]);
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Profiles: ' + profiles[0]);
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with Google credentials: ' + JSON.stringify(profiles[0].googleToken));
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with email: ' + JSON.stringify(profile[s0].email));
+		//console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with refresh_token: ' + profiles[0].googleToken.refresh_token);
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with email: ' + JSON.stringify(profiles[0].email));
 
 		oauth2Client.setCredentials(profiles[0].googleToken);
 		//https://developers.google.com/accounts/docs/OAuth2WebServer
+
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client : ' + JSON.stringify(oauth2Client));
+		//console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client.tokeninfo : ' + oauth2Client.tokeninfo);
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client.credentials: ' + JSON.stringify(oauth2Client.credentials));
+		//console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client.credentials: ' + JSON.parse(oauth2Client.credentials));
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client.credentials: ' + oauth2Client.credentials);
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client.credentials: ' + util.inspect(oauth2Client.credentials,{depth:null}));
+		console.dir(oauth2Client);
+		console.dir(oauth2Client.credentials);
+		
+		/*2014-12-04 17:14:24 OAuth2Client.credentials: "[object Object]"
+2014-12-04 17:14:24 OAuth2Client.credentials: [object Object]
+2014-12-04 17:14:24 OAuth2Client.credentials: '[object Object]'
+{ transporter: {},
+  clientId_: '619973237257-ud5ujht6btm8njnfq6v158sm27abr5nn.apps.googleusercontent.com',
+  clientSecret_: 'O-b4w10_tnK96SUG9tpdDYxS',
+  redirectUri_: 'http://localhost:8080/google/oauth2callback/',
+  opts: {},
+  credentials: '[object Object]' }
+'[object Object]'
+2014-12-04 17:14:24 Error while getting Adsense data: Error: No access or refresh token is set.*/
 
 		adsense.accounts.list({auth:oauth2Client} , function(err,response){
 			if (err){
