@@ -83,99 +83,43 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "public/core.js",
-			"settings":
-			{
-				"buffer_size": 4071,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "public/index.html",
-			"settings":
-			{
-				"buffer_size": 6197,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "package.json",
-			"settings":
-			{
-				"buffer_size": 424,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "server.js",
-			"settings":
-			{
-				"buffer_size": 30368,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "scotchtodo.sublime-workspace",
-			"settings":
-			{
-				"buffer_size": 6707,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "smd_modules/todo.js",
-			"settings":
-			{
-				"buffer_size": 2723,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/smd/dev/tutocwbrestful/app.js",
-			"settings":
-			{
-				"buffer_size": 1659,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/smd/dev/tutocwbrestful/routes/index.js",
-			"settings":
-			{
-				"buffer_size": 199,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/smd/dev/tutocwbrestful/routes/users.js",
-			"settings":
-			{
-				"buffer_size": 1183,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/smd/dev/tutocwbrestful/public/javascripts/global.js",
-			"settings":
-			{
-				"buffer_size": 9531,
-				"line_ending": "Windows"
-			}
-		}
 	],
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 58.0,
+		"height": 392.0,
 		"selected_items":
 		[
+			[
+				"git status",
+				"Git: Status"
+			],
+			[
+				"git pu",
+				"Git: Push Current Branch"
+			],
+			[
+				"git com",
+				"Git: Commit"
+			],
+			[
+				"git add",
+				"Git: Add Current File"
+			],
+			[
+				"git st",
+				"Git: Status"
+			],
+			[
+				"git s",
+				"Git: Status"
+			],
 			[
 				"Pack",
 				"Preferences: Browse Packages"
 			]
 		],
-		"width": 392.0
+		"width": 467.0
 	},
 	"console":
 	{
@@ -192,13 +136,25 @@
 	},
 	"file_history":
 	[
+		"/Users/nicolasdaudin/dev/scotchtodo/public/core.js",
+		"/Users/nicolasdaudin/dev/scotchtodo/public/index.html",
+		"/Users/nicolasdaudin/dev/scotchtodo/smd_modules/google.js",
+		"/Users/nicolasdaudin/dev/scotchtodo/smd_modules/clickbank.js",
+		"/Users/nicolasdaudin/dev/scotchtodo/package.json",
+		"/Users/nicolasdaudin/dev/scotchtodo/server.js",
+		"/Users/nicolasdaudin/dev/scotchtodo/smd_modules/todo.js",
+		"/Users/nicolasdaudin/dev/scotchtodo/scotchtodo.sublime-workspace",
+		"/Users/nicolasdaudin/dev/scotchtodo/models.js",
+		"/C/smd/dev/tutocwbrestful/app.js",
+		"/C/smd/dev/tutocwbrestful/public/javascripts/global.js",
+		"/C/smd/dev/tutocwbrestful/routes/users.js",
+		"/C/smd/dev/tutocwbrestful/routes/index.js",
 		"/C/smd/dev/scotchtodo/certs/clickbank2.cer",
 		"/C/smd/dev/scotchtodo/smd_modules/clickbank.js",
 		"/C/smd/dev/scotchtodo/example-call-subscription-details2.json",
 		"/C/Windows/System32/drivers/etc/hosts",
 		"/C/smd/dev/scotchtodo/.gitignore",
 		"/C/smd/dev/tutocwbrestful/node_modules/express/index.js",
-		"/C/smd/dev/tutocwbrestful/routes/index.js",
 		"/C/smd/dev/tutocwbuecheler/routes/users.js",
 		"/C/smd/dev/tutocwbuecheler/routes/index.js",
 		"/C/smd/dev/tutocwbuecheler/app.js",
@@ -248,278 +204,8 @@
 	"groups":
 	[
 		{
-			"selected": 5,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "public/core.js",
-					"settings":
-					{
-						"buffer_size": 4071,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1946,
-								1946
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "public/index.html",
-					"settings":
-					{
-						"buffer_size": 6197,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3339,
-								3339
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 1485.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "package.json",
-					"settings":
-					{
-						"buffer_size": 424,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								424,
-								424
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "server.js",
-					"settings":
-					{
-						"buffer_size": 30368,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2601,
-								2601
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 294.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "scotchtodo.sublime-workspace",
-					"settings":
-					{
-						"buffer_size": 6707,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								46,
-								46
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "smd_modules/todo.js",
-					"settings":
-					{
-						"buffer_size": 2723,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								871,
-								871
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "/C/smd/dev/tutocwbrestful/app.js",
-					"settings":
-					{
-						"buffer_size": 1659,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								920,
-								920
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "/C/smd/dev/tutocwbrestful/routes/index.js",
-					"settings":
-					{
-						"buffer_size": 199,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "/C/smd/dev/tutocwbrestful/routes/users.js",
-					"settings":
-					{
-						"buffer_size": 1183,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								319,
-								340
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "/C/smd/dev/tutocwbrestful/public/javascripts/global.js",
-					"settings":
-					{
-						"buffer_size": 9531,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								5469,
-								5469
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 840.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -554,6 +240,10 @@
 		]
 	},
 	"menu_visible": true,
+	"output.git":
+	{
+		"height": 100.0
+	},
 	"replace":
 	{
 		"height": 62.0
