@@ -55,16 +55,36 @@ router.get('/oauth2callback',function(req,res){
 	oauth2Client.getToken(authCode, function(err, token){
 		if (!err){
 			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google Token is : ' + JSON.stringify(token));
-			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google Token is : ' + token);
 
-			oauth2Client.setCredentials(token);			
-			
-			// storing it
-			UserProfile.update({email:email},{googleToken:token}, function(err,todo){
-				if (err){
-					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error when storing Google token: '  + err);
-				}
-			})
+			oauth2Client.setCredentials({
+				access_token: token.access_token,
+				refresh_token : token.refresh_token
+			});			
+
+			if (token.refresh_token){
+				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Updating UserProfile with access_token[' + token.access_token + '] and refresh_token['+ token.refresh_token+']');
+				// storing it
+				UserProfile.update({email:email},{googleToken: { access_token: token.access_token,	refresh_token : token.refresh_token}}, function(err,result, raw){
+					if (err){
+						console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error when storing Google token: '  + err);
+					} else {
+						console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Result of update: '  + result);
+						console.log('The raw response from Mongo was ', raw);
+					}
+				})
+			} else {
+				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Updating UserProfile with access_token[' + token.access_token + ']');
+				
+				// storing it
+				UserProfile.update({email:email},{googleToken: { access_token: token.access_token,	refresh_token : token.refresh_token}}, function(err,result,raw){
+					if (err){
+						console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error when storing Google token: '  + err);
+					} else {
+						console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Result of update: '  + result);
+						console.log('The raw response from Mongo was ', raw);
+					}
+				})
+			}
 		}
 	})
 
@@ -84,51 +104,21 @@ router.get('/adsense',function(req,res){
 			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error while retrieving User Profile: ' + err);
 		}
 
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Profiles: ' + profiles);
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Profiles stringify: ' + JSON.stringify(profiles));		
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Profiles[0]: ' + profiles[0]);
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Profiles[0] stringify: ' + JSON.stringify(profiles[0]));
 
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with Google credentials: ' + profiles[0].googleToken);
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with Google credentials stringify: ' + JSON.stringify(profiles[0].googleToken));
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' NEW User with Google credentials: ' + profiles.googleToken);
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' NEW User with Google credentials stringify: ' + JSON.stringify(profiles.googleToken));
-		//console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with refresh_token: ' + profiles[0].googleToken.refresh_token);
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with email: ' + profiles[0].email);
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with email: ' + JSON.stringify(profiles[0].email));
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' NEW User with email: ' + profiles.email);
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' NEW User with email: ' + JSON.stringify(profiles.email));
-
-		console.log('Type of profiles : ' + Type.string(profiles));
-		console.log('Type of profiles[0] : ' + Type.string(profiles[0]));
-		console.log('Type of google token : ' + Type.string(profiles[0].googleToken));
-		console.log('NEW : ' + Type.string(profiles.googleToken));
-
+		
 		oauth2Client.setCredentials(profiles[0].googleToken);
 		//https://developers.google.com/accounts/docs/OAuth2WebServer
 
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client : ' + oauth2Client);
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client : ' + JSON.stringify(oauth2Client));
-		//console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client.tokeninfo : ' + oauth2Client.tokeninfo);
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client.credentials: ' + oauth2Client.credentials);
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client.credentials: ' + JSON.stringify(oauth2Client.credentials));
 		
-		
-		/*2014-12-04 17:14:24 OAuth2Client.credentials: "[object Object]"
-2014-12-04 17:14:24 OAuth2Client.credentials: [object Object]
-2014-12-04 17:14:24 OAuth2Client.credentials: '[object Object]'
-{ transporter: {},
-  clientId_: '619973237257-ud5ujht6btm8njnfq6v158sm27abr5nn.apps.googleusercontent.com',
-  clientSecret_: 'O-b4w10_tnK96SUG9tpdDYxS',
-  redirectUri_: 'http://localhost:8080/google/oauth2callback/',
-  opts: {},
-  credentials: '[object Object]' }
-'[object Object]'
-2014-12-04 17:14:24 Error while getting Adsense data: Error: No access or refresh token is set.*/
-
 		adsense.accounts.list({auth:oauth2Client} , function(err,response){
 			if (err){
-				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error while getting Adsense data: ' + err);
+				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error while getting Adsense data: ' + JSON.stringify(err));
 			} else {
 				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google OAUTH result LIST: ' + JSON.stringify(response));
 				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Publisher name : ' + response.items[0].name);
