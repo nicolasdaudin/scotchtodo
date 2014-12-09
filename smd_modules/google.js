@@ -59,32 +59,36 @@ router.get('/oauth2callback',function(req,res){
 			oauth2Client.setCredentials({
 				access_token: token.access_token,
 				refresh_token : token.refresh_token
-			});			
+			});
 
-			if (token.refresh_token){
-				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Updating UserProfile with access_token[' + token.access_token + '] and refresh_token['+ token.refresh_token+']');
-				// storing it
-				UserProfile.update({email:email},{googleToken: { access_token: token.access_token,	refresh_token : token.refresh_token}}, function(err,result, raw){
+			// finding the correct UserProfile
+			UserProfile.findOne({email:email},function(err, userprofile){
+				if (err){
+					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error while retrieving user profile: '  + err);
+				}
+
+				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' userprofile found : '  + JSON.stringify(userprofile)); 
+
+				var googleInfo = userprofile.google;
+				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' googleInfo before the change: '  + JSON.stringify(googleInfo));
+				googleInfo.access_token = token.access_token;
+				if (token.refresh_token){
+					googleInfo.refresh_token = token.refresh_token;
+				}
+
+				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' googleInfo after the change: '  + JSON.stringify(googleInfo));
+				userprofile.update({google: googleInfo},function(err,result, raw){
 					if (err){
-						console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error when storing Google token: '  + err);
+						console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error when storing Google info: '  + err);
 					} else {
 						console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Result of update: '  + result);
 						console.log('The raw response from Mongo was ', raw);
 					}
-				})
-			} else {
-				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Updating UserProfile with access_token[' + token.access_token + ']');
+				});
 				
-				// storing it
-				UserProfile.update({email:email},{googleToken: { access_token: token.access_token,	refresh_token : token.refresh_token}}, function(err,result,raw){
-					if (err){
-						console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error when storing Google token: '  + err);
-					} else {
-						console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Result of update: '  + result);
-						console.log('The raw response from Mongo was ', raw);
-					}
-				})
-			}
+
+			});
+
 		}
 	})
 
@@ -107,10 +111,16 @@ router.get('/adsense',function(req,res){
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Profiles stringify: ' + JSON.stringify(profiles));		
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Profiles[0] stringify: ' + JSON.stringify(profiles[0]));
 
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with Google credentials stringify: ' + JSON.stringify(profiles[0].googleToken));
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with Google credentials stringify: ' + JSON.stringify(profiles[0].google));
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with email: ' + JSON.stringify(profiles[0].email));
 		
-		oauth2Client.setCredentials(profiles[0].googleToken);
+		// only get access and refresh
+		var credentials = {
+			access_token : profiles[0].google.access_token,
+			refresh_token : profiles[0].google.refresh_token
+		}
+
+		oauth2Client.setCredentials(credentials);
 		//https://developers.google.com/accounts/docs/OAuth2WebServer
 
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client : ' + JSON.stringify(oauth2Client));

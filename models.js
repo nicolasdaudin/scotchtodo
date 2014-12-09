@@ -28,7 +28,11 @@ module.exports.Todo = Todo;
 
 var UserProfile = db.model('UserProfile',{
 	email : String,
-	googleToken : {}
+	google : {},
+	clickbank: {
+		account_name: String,
+		api_key: String
+	}
 });
 
 
