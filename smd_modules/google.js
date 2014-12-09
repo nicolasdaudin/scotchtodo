@@ -82,7 +82,7 @@ router.get('/oauth2callback',function(req,res){
 						console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error when storing Google info: '  + err);
 					} else {
 						console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Result of update: '  + result);
-						console.log('The raw response from Mongo was ', raw);
+						//console.log('The raw response from Mongo was ', raw);
 					}
 				});
 				

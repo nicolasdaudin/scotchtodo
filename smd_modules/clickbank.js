@@ -4,6 +4,9 @@ var moment = require('moment');
 var querystring = require('querystring');
 var https = require('https');
 
+var UserProfile = require('../models.js').UserProfile;
+
+
 // CLICKBANK CONSTANTS
 var CLICKBANK_CONSTANTS = {
 	HOST: 'api.clickbank.com',	
@@ -12,17 +15,14 @@ var CLICKBANK_CONSTANTS = {
  	DETAIL_PATH : '/rest/1.3/analytics/affiliate/affiliate',
  	SUBS_DETAIL_PATH: '/rest/1.3/analytics/affiliate/subscription/details',
  	TRENDS_PATH: '/rest/1.3/analytics/affiliate/subscription/trends',
- 	DEV_API_KEY : 'DEV-8Q6RMJUSUOCR3PRFF2QUGF1JGQ575UO2',
-	USER_API : {
-		TYPE 	:'master',
-		KEY 	:'API-JBQIHA1OH2QH40PDQ9LLLAIR1S0BCAKT'
-	},
-	/*USER_API : {
-		TYPE 	:'nicdo77',
-		KEY 	:'API-6A9LNO4L8VVINIUIFIC96JUUERB33UDK'
-	},*/
-	ACCOUNT : 'nicdo77'
+ 	
+ 	DEV_API_KEY : 'DEV-8Q6RMJUSUOCR3PRFF2QUGF1JGQ575UO2'
+
 }
+
+
+// default email to store and retrieve Clickbank info (until we implement user logins and profiles)
+var email = 'nicolas.daudin@gmail.com';
 
 
 // get clickbank data
@@ -31,12 +31,12 @@ router.get('/month',function(req,res){
 	var host = 'api.clickbank.com';	
 	var path = '/rest/1.3/quickstats/count';
 	//var path = '/rest/1.3/debug';
-	var dev_api_key = 'DEV-8Q6RMJUSUOCR3PRFF2QUGF1JGQ575UO2';
 	
-	var user_api = {
+	
+	/*var user_api = {
 		type:'master',
 		key:'API-JBQIHA1OH2QH40PDQ9LLLAIR1S0BCAKT'
-	};
+	};*/
 
 	/*var user_api = {
 		type:'nicdo77',
@@ -45,51 +45,62 @@ router.get('/month',function(req,res){
 
 	var startDate = moment().startOf('month').format('YYYY-MM-DD');
 	var endDate = moment().format('YYYY-MM-DD');
-	var account = 'nicdo77';	
-
-	var clickbankQueryData = {
-		startDate: startDate,
-		endDate: endDate,
-		account: account
-	};
-	var clickbankQueryString = querystring.stringify(clickbankQueryData);
-
 	
+	// finding the correct UserProfile
+	UserProfile.findOne({email:email},function(err, userprofile){
+		if (err){
+			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error while retrieving user profile: '  + err);
+		}
 
-	var options = {
-	    host: host,	
-	    method: 'GET',
-	    path: path + '?' + clickbankQueryString,
-	    /*auth: dev_api_key + ':' + user_api_key,*/
-	    /*cert: fs.readFileSync('certs/clickbank.cer'),*/
-	    headers: {
-	    	'Accept': 'application/json',
-	    	'Authorization':dev_api_key + ':' + user_api.key
-	    }
-	  };
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' userprofile found : '  + JSON.stringify(userprofile)); 
 
-	var options2 = {
-		host: 'google.com',
-		method: 'GET'
-	};
+		var clickbankInfo = userprofile.clickbank;
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' clickbankInfo: '  + JSON.stringify(clickbankInfo));
+		
+		var account = clickbankInfo.account_name;
+		var api_key = clickbankInfo.api_key;
+		
+		
+		var clickbankQueryData = {
+			startDate: startDate,
+			endDate: endDate,
+			account: account
+		};
+		var clickbankQueryString = querystring.stringify(clickbankQueryData);
 
-	console.log('REQUEST OPTIONS [using API KEY from ' + user_api.type + ']: ' + JSON.stringify(options));
 
-	var cbreq = https.request(options, function(resCB) {
-		  console.log('RESP STATUS: ' + resCB.statusCode);
-		  console.log('RESP HEADERS: ' + JSON.stringify(resCB.headers));
-		  resCB.setEncoding('utf8');
-		  resCB.on('data', function (chunk) {
-		    console.log('BODY: ' + chunk);
-		    res.send(chunk);
-		  });
+		var options = {
+		    host: host,	
+		    method: 'GET',
+		    path: path + '?' + clickbankQueryString,	    
+		    headers: {
+		    	'Accept': 'application/json',
+		    	'Authorization':CLICKBANK_CONSTANTS.DEV_API_KEY + ':' + api_key
+		    }
+		};
+
+
+		console.log('REQUEST OPTIONS [using API KEY from master]: ' + JSON.stringify(options));
+
+		var cbreq = https.request(options, function(resCB) {
+			  console.log('RESP STATUS: ' + resCB.statusCode);
+			  console.log('RESP HEADERS: ' + JSON.stringify(resCB.headers));
+			  resCB.setEncoding('utf8');
+			  resCB.on('data', function (chunk) {
+			    console.log('BODY: ' + chunk);
+			    res.send(chunk);
+			  });
+			});
+		
+		cbreq.on('error', function(e) {
+		  console.log('problem with request: ' + e);
 		});
-	
-	cbreq.on('error', function(e) {
-	  console.log('problem with request: ' + e);
+		
+		cbreq.end();
 	});
+
+
 	
-	cbreq.end();
 
 	//res.send('success');
 })
@@ -257,47 +268,61 @@ router.get('/sumup',function(req,res){
 
 var clickbankQuick = function(date_interval,callback){
 
-	var clickbankQueryData = {		
-		account 	: CLICKBANK_CONSTANTS.ACCOUNT 
-	};
+	// finding the correct UserProfile
+	UserProfile.findOne({email:email},function(err, userprofile){
+		if (err){
+			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error while retrieving user profile: '  + err);
+		}
 
-	if (date_interval.start != null){
-		clickbankQueryData.startDate = date_interval.start;
-		clickbankQueryData.endDate = date_interval.end;
-	}
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' userprofile found : '  + JSON.stringify(userprofile)); 
 
-	var clickbankQueryString = querystring.stringify(clickbankQueryData);
+		var clickbankInfo = userprofile.clickbank;
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' clickbankInfo: '  + JSON.stringify(clickbankInfo));
+		
+		var account = clickbankInfo.account_name;
+		var api_key = clickbankInfo.api_key;
+		
 
-	var options = {
-	    host: CLICKBANK_CONSTANTS.HOST,	
-	    method: 'GET',
-	    path: CLICKBANK_CONSTANTS.QUICKSTATS_PATH + '?' + clickbankQueryString,
-	    /*auth: dev_api_key + ':' + user_api_key,*/
-	    /*cert: fs.readFileSync('certs/clickbank.cer'),*/
-	    headers: {
-	    	'Accept': 'application/json',
-	    	'Authorization':CLICKBANK_CONSTANTS.DEV_API_KEY + ':' + CLICKBANK_CONSTANTS.USER_API.KEY
-	    }
-	  };
+		var clickbankQueryData = {		
+			account 	: account
+		};
 
-	console.log('About to request Clickbank [using API KEY from ' + CLICKBANK_CONSTANTS.USER_API.TYPE + ']: ' + JSON.stringify(options)); 
+		if (date_interval.start != null){
+			clickbankQueryData.startDate = date_interval.start;
+			clickbankQueryData.endDate = date_interval.end;
+		}
 
-	//var clickbankResult; 
-	var cbreq = https.request(options, function(resCB) {
-		  console.log('RESP STATUS: ' + resCB.statusCode);
-		  console.log('RESP HEADERS: ' + JSON.stringify(resCB.headers));
-		  resCB.setEncoding('utf8');
-		  resCB.on('data', function (chunk) {
-		    console.log('BODY: ' + chunk);
-		    callback(chunk);
-		  });
+		var clickbankQueryString = querystring.stringify(clickbankQueryData);
+
+		var options = {
+		    host: CLICKBANK_CONSTANTS.HOST,	
+		    method: 'GET',
+		    path: CLICKBANK_CONSTANTS.QUICKSTATS_PATH + '?' + clickbankQueryString,
+		    headers: {
+		    	'Accept': 'application/json',
+		    	'Authorization':CLICKBANK_CONSTANTS.DEV_API_KEY + ':' + api_key
+		    }
+		  };
+
+		console.log('About to request Clickbank [using API KEY from master]: ' + JSON.stringify(options)); 
+
+		//var clickbankResult; 
+		var cbreq = https.request(options, function(resCB) {
+			  console.log('RESP STATUS: ' + resCB.statusCode);
+			  console.log('RESP HEADERS: ' + JSON.stringify(resCB.headers));
+			  resCB.setEncoding('utf8');
+			  resCB.on('data', function (chunk) {
+			    console.log('BODY: ' + chunk);
+			    callback(chunk);
+			  });
+			});
+		
+		cbreq.on('error', function(e) {
+		  	console.log('problem with request: ' + e);
 		});
-	
-	cbreq.on('error', function(e) {
-	  console.log('problem with request: ' + e);
+		
+		cbreq.end();
 	});
-	
-	cbreq.end();
 };
 
 	/*
@@ -308,6 +333,10 @@ var clickbankQuick = function(date_interval,callback){
 		{"avgActiveSubCnt":"0","avgSubAge":"28","avgSubValue":"0","cancelSubCnt":"0","duration":"0","grossSales":"0","initialSaleAmt":"0","initialSaleCnt":"0","itemNo":"1","netSales":"0","nickname":"zcodesys","productId":"902023","recurringSaleAmt":"0","recurringSaleCnt":"0","totalSalesCnt":"0"}]}}
 	*/
 var clickbankAlltime = function(date_interval,callback){
+
+	/*****
+	ATTENTION J'AI PAS ADAPTË A L'USAGE DE MODEL.js
+	******/
 
 	var clickbankQueryData = {		
 		account 	: CLICKBANK_CONSTANTS.ACCOUNT 
@@ -369,6 +398,10 @@ var clickbankAlltime = function(date_interval,callback){
 };
 
 var clickbankDetail = function(date_interval,callback){
+
+	/*****
+	ATTENTION J'AI PAS ADAPTË A L'USAGE DE MODEL.js
+	******/
 
 	var clickbankQueryData = {
 		startDate 	: date_interval.start,
