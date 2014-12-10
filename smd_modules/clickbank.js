@@ -16,7 +16,7 @@ var CLICKBANK_CONSTANTS = {
  	SUBS_DETAIL_PATH: '/rest/1.3/analytics/affiliate/subscription/details',
  	TRENDS_PATH: '/rest/1.3/analytics/affiliate/subscription/trends',
  	
- 	DEV_API_KEY : 'DEV-8Q6RMJUSUOCR3PRFF2QUGF1JGQ575UO2'
+ 	DEV_API_KEY : 'DEV-8Q6RMJUSUOCR3PRFF2QUGF1JGQ575UO2' // info from the app, need to be moved to constants file or to DB
 
 }
 

@@ -28,7 +28,7 @@ module.exports.Todo = Todo;
 
 var UserProfile = db.model('UserProfile',{
 	email : String,
-	google : {},
+	google : {}, // for some reasons we can't define here access_token, refresh_token and account_id
 	clickbank: {
 		account_name: String,
 		api_key: String

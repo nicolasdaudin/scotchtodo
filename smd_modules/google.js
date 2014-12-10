@@ -14,8 +14,10 @@ var UserProfile = require('../models.js').UserProfile;
 // INIT GOOGLE API
 var OAuth2 = google.auth.OAuth2;
 
+ // info from the app, need to be moved to constants file or to DB
 var CLIENT_ID = "619973237257-ud5ujht6btm8njnfq6v158sm27abr5nn.apps.googleusercontent.com";
 var CLIENT_SECRET = "O-b4w10_tnK96SUG9tpdDYxS";
+
 //var REDIRECT_URL = "http://ec2-54-183-136-164.us-west-1.compute.amazonaws.com:8080/oauth2callback/google";
 var REDIRECT_URL = "http://localhost:8080/google/oauth2callback/";
 
@@ -108,11 +110,8 @@ router.get('/adsense',function(req,res){
 			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error while retrieving User Profile: ' + err);
 		}
 
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Profiles stringify: ' + JSON.stringify(profiles));		
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Profiles[0] stringify: ' + JSON.stringify(profiles[0]));
-
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with Google credentials stringify: ' + JSON.stringify(profiles[0].google));
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with email: ' + JSON.stringify(profiles[0].email));
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User profile: ' + JSON.stringify(profiles));	
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with Google credentials : ' + JSON.stringify(profiles[0].google));		
 		
 		// only get access and refresh
 		var credentials = {
@@ -123,83 +122,77 @@ router.get('/adsense',function(req,res){
 		oauth2Client.setCredentials(credentials);
 		//https://developers.google.com/accounts/docs/OAuth2WebServer
 
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client : ' + JSON.stringify(oauth2Client));
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client.credentials: ' + JSON.stringify(oauth2Client.credentials));
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client : ' + JSON.stringify(oauth2Client));		
 		
-		adsense.accounts.list({auth:oauth2Client} , function(err,response){
-			if (err){
-				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error while getting Adsense data: ' + JSON.stringify(err));
-			} else {
-				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google OAUTH result LIST: ' + JSON.stringify(response));
-				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Publisher name : ' + response.items[0].name);
-			
-				console.log('Publisher id : ' + response.items[0].id);
+		// account id should already be known. When a user will create his profile, and connect to adsense, we will get this information back
+		// and store it upon integration with his Adsense.
+		// adsense.accounts.list({auth:oauth2Client}, function(err,response){ ......response.items[0].id }) should be used
+		var accountId = profiles[0].google.adsense_id;
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' accountId : ' + accountId);		
+		
+		// data retrieval strategy:
+		// I retrieve everything from DB, except 'today'
 
-				var accountId = response.items[0].id;
+		// at the moment, I try to retrieve 'yesterday' from DB, and if it's not, I also take it from Google's result
+		// TODO: 'yesterday' should be retrieved by the cron
+		var today = {
+			start 	:  	moment().format('YYYY-MM-DD'),
+			end 	: 	moment().format('YYYY-MM-DD')
+		}
 
-				var today = {
-					start 	:  	moment().format('YYYY-MM-DD'),
-					end 	: 	moment().format('YYYY-MM-DD')
-				}
+		var yesterday = {
+			start 	:  	moment().subtract(1,'day').format('YYYY-MM-DD'),
+			end 	: 	moment().subtract(1,'day').format('YYYY-MM-DD')
+		}
 
-				var yesterday = {
-					start 	:  	moment().subtract(1,'day').format('YYYY-MM-DD'),
-					end 	: 	moment().subtract(1,'day').format('YYYY-MM-DD')
-				}
+		var two_days_ago = {
+			start 	:  	moment().subtract(2,'day').format('YYYY-MM-DD'),
+			end 	: 	moment().subtract(2,'day').format('YYYY-MM-DD')
+		}
 
-				var two_days_ago = {
-					start 	:  	moment().subtract(2,'day').format('YYYY-MM-DD'),
-					end 	: 	moment().subtract(2,'day').format('YYYY-MM-DD')
-				}
+		var current_month = {
+			start :  moment().startOf('month').format('YYYY-MM-DD'),
+			end : moment().format('YYYY-MM-DD')
+		}
 
-				var current_month = {
-					start :  moment().startOf('month').format('YYYY-MM-DD'),
-					end : moment().format('YYYY-MM-DD')
-				}
+		var reportParams = {
+			accountId : accountId,
+			auth : oauth2Client,
+			startDate: current_month.start,
+			endDate: current_month.end,
+			dimension:'DATE',
+			metric:'EARNINGS'
+		}
 
-				var reportParams = {
-					accountId : response.items[0].id,
-					auth : oauth2Client,
-					startDate: current_month.start,
-					endDate: current_month.end,
-					dimension:'DATE',
-					metric:'EARNINGS'
-				}
+		adsense.accounts.reports.generate(reportParams, function(errReport,response){
+			if (errReport){
+				console.log('Error while getting report: ' + errReport);
+				console.log('Error while getting report: ' + JSON.stringify(errReport));
+			} else {				
+				console.log('Google Reports Response JSON: ' + JSON.stringify(response));
 
-				adsense.accounts.reports.generate(reportParams, function(errReport,response){
-					if (errReport){
-						console.log('Error while getting report: ' + errReport);
-						console.log('Error while getting report: ' + JSON.stringify(errReport));
-					} else {
-						console.log('Google Reports Response: ' + response);
-						console.log('Google Reports Response JSON: ' + JSON.stringify(response));
+				console.log('Google Reports Rows : ' + response.rows);
+				
+				var todayValue = response.rows.find(function(a) { return a[0] === today.start;})
+				console.log('Google Report Todays earnings: ' + todayValue[1]);
 
-						console.log('Google Reports Rows : ' + response.rows);
-						
-						var todayValue = response.rows.find(function(a) { return a[0] === today.start;})
-						console.log('Google Report Todays earnings: ' + todayValue[1]);
+				var yesterdayValue = response.rows.find(function(a) { return a[0] === yesterday.start;})
+				console.log('Google Report Yesterdays earnings : ' + yesterdayValue[1]);
 
-						var yesterdayValue = response.rows.find(function(a) { return a[0] === yesterday.start;})
-						console.log('Google Report Yesterdays earnings : ' + yesterdayValue[1]);
+				var twoDaysAgoValue = response.rows.find(function(a) { return a[0] === two_days_ago.start;})
+				console.log('Google Report Two Days Ago earnings : ' + twoDaysAgoValue[1]);
 
-						var twoDaysAgoValue = response.rows.find(function(a) { return a[0] === two_days_ago.start;})
-						console.log('Google Report Two Days Ago earnings : ' + twoDaysAgoValue[1]);
+				var monthValue = response.totals[1];
+				console.log('Google Report Total Months earnings : ' + monthValue);
 
-						var monthValue = response.totals[1];
-						console.log('Google Report Total Months earnings : ' + monthValue);
-
-						res.send({
-							today: todayValue[1],
-							yesterday: yesterdayValue[1],
-							two_days_ago: twoDaysAgoValue[1],
-							current_month: monthValue
-						});
-					}
+				res.send({
+					today: todayValue[1],
+					yesterday: yesterdayValue[1],
+					two_days_ago: twoDaysAgoValue[1],
+					current_month: monthValue
 				});
 			}
 		});
-	
-
 	})
 
 	console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' End Google REPORT');
