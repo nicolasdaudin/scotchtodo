@@ -143,7 +143,7 @@
 			"file": "smd_modules/clickbank.js",
 			"settings":
 			{
-				"buffer_size": 23708,
+				"buffer_size": 24731,
 				"line_ending": "Windows"
 			}
 		},
@@ -151,7 +151,7 @@
 			"file": "smd_modules/google.js",
 			"settings":
 			{
-				"buffer_size": 7334,
+				"buffer_size": 7009,
 				"line_ending": "Windows"
 			}
 		},
@@ -159,7 +159,7 @@
 			"file": "models.js",
 			"settings":
 			{
-				"buffer_size": 818,
+				"buffer_size": 902,
 				"line_ending": "Windows"
 			}
 		}
@@ -393,7 +393,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 711.0,
+						"translation.y": 899.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -403,15 +403,15 @@
 					"file": "smd_modules/clickbank.js",
 					"settings":
 					{
-						"buffer_size": 23708,
+						"buffer_size": 24731,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								823,
-								823
+								544,
+								544
 							]
 						],
 						"settings":
@@ -430,15 +430,15 @@
 					"file": "smd_modules/google.js",
 					"settings":
 					{
-						"buffer_size": 7334,
+						"buffer_size": 7009,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4277,
-								4277
+								4977,
+								4977
 							]
 						],
 						"settings":
@@ -447,7 +447,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 675.0,
+						"translation.y": 2314.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -457,23 +457,24 @@
 					"file": "models.js",
 					"settings":
 					{
-						"buffer_size": 818,
+						"buffer_size": 902,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								709,
-								709
+								858,
+								858
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 285.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
