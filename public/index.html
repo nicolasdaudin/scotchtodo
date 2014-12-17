@@ -41,8 +41,13 @@
 			<div><button type="button" ng-click="connectGoogle()">CONNECT GOOGLE</button></div>
 			<div><a href="{{ oauthUrl }}" target="_blank">Go to Google OAUTH URL ({{ oauthUrl }})</a>
 			<div>
-				<button type="button" ng-click="getGoogleAdsenseData()">GET ADSENSE DATA</button>
-				Adsense raw data : {{ adsenseData }}
+				<p>
+					<button type="button" ng-click="getGoogleAdsenseData()">GET ADSENSE DATA</button>
+					Adsense raw data : {{ adsenseData }}
+				</p>
+				<p>
+					<button type="button" ng-click="setGoogleDataInDB()">SET GOOGLE's YESTERDAY DATA IN DB</button>
+				</p>
 				<table>
 					<tr data-ng-repeat="adsenseDay in adsenseData.rows | orderBy : 0 : reverse">
 						<td><span>{{ adsenseDay[0] }}</span></td>
@@ -57,6 +62,7 @@
 			
 			<div>
 				<button type="button" ng-click="getClickBankStatsSumup()">CLICKBANK SUMUP</button>
+				<button type="button" ng-click="setClickbankDataInDB()">SET CLICKBANK's YESTERDAY DATA IN DB</button>
 				<table>
 					<thead>
 						<tr>

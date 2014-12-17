@@ -104,6 +104,17 @@ function mainController($scope, $http){
 
 	}
 
+	$scope.setClickbankDataInDB = function(){
+		$http.post('/clickbank/yesterday')
+				.success(function(data){					
+					console.log('setClickbankDataInDB Clickbank sumup operation: success');
+				})
+				.error(function(data){
+					console.log('setClickbankDataInDB Clickbank operation: ERROR');
+				});
+
+	}
+
 	$scope.getGoogleAdsenseData = function(){
 		console.log('getGoogleAdsenseData BEGIN');		
 			$http.get('/google/adsense')
@@ -116,6 +127,17 @@ function mainController($scope, $http){
 					console.log('getGoogleAdsenseData ERROR');
 				});
 	}
+
+	$scope.setGoogleDataInDB = function(){
+		console.log('setGoogleDataInDB BEGIN');		
+			$http.post('/google/adsense')
+				.success(function(){					
+					console.log('setGoogleDataInDB Successfull call');
+				})
+				.error(function(){
+					console.log('setGoogleDataInDB ERROR');
+				});
+	}	
 
 	$scope.connectGoogle = function(){
 		console.log('connectGoogle BEGIN');
