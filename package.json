@@ -3,7 +3,7 @@
 	"version"		:	"0.0.1",
 	"description"	:	"Simple todo application by Scotch.io",
 	"main"			:	"server.js",
-	"author"		:	"Scotch",
+	"author"		:	"Nicolas Daudin",
 	"dependencies" : {
 	    "express"    : "~4.7.2",
 	    "mongoose"   : "~3.6.2",
