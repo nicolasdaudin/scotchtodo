@@ -167,16 +167,32 @@
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 380.0,
+		"height": 392.0,
 		"selected_items":
 		[
 			[
-				"Pack",
-				"Package Control: Install Package"
+				"in",
+				"Indent XML"
 			],
 			[
-				"in",
-				"Indentation: Reindent Lines"
+				"inde",
+				"Indent XML"
+			],
+			[
+				"inden",
+				"Indent XML"
+			],
+			[
+				"indent",
+				"Indent XML"
+			],
+			[
+				"xml",
+				"Indent XML"
+			],
+			[
+				"Pack",
+				"Package Control: Install Package"
 			]
 		],
 		"width": 400.0
@@ -410,8 +426,8 @@
 						"selection":
 						[
 							[
-								544,
-								544
+								921,
+								921
 							]
 						],
 						"settings":

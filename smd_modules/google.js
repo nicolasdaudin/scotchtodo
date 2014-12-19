@@ -6,10 +6,12 @@ var util = require("util");
 var Type = require('type-of-is');
 
 var google = require('googleapis');
+var adsense = google.adsense('v1.4');
 
 require('array.prototype.find');
 
 var UserProfile = require('../models.js').UserProfile;
+var Earning = require('../models.js').Earning;
 
 // INIT GOOGLE API
 var OAuth2 = google.auth.OAuth2;
@@ -102,7 +104,7 @@ router.get('/oauth2callback',function(req,res){
 router.get('/adsense',function(req,res){
 	console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Start Google REPORT');
 
-	var adsense = google.adsense('v1.4');
+	
 
 	// looking for credentials
 	UserProfile.find({email:email},function(err,profiles){
@@ -199,5 +201,82 @@ router.get('/adsense',function(req,res){
 
 	//res.redirect('/');
 })
+
+// get adsense data from adsense API and store them in DB
+router.post('/adsense',function(req,res){
+	console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google Set in DB START');
+
+	// looking for credentials
+	UserProfile.find({email:email},function(err,profiles){
+		if (err){
+			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google Set in DB Error while retrieving User Profile: ' + err);
+		}
+
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google Set in DB User profile: ' + JSON.stringify(profiles));	
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google Set in DB User with Google credentials : ' + JSON.stringify(profiles[0].google));		
+		
+		// only get access and refresh
+		var credentials = {
+			access_token : profiles[0].google.access_token,
+			refresh_token : profiles[0].google.refresh_token
+		}
+
+		oauth2Client.setCredentials(credentials);
+		//https://developers.google.com/accounts/docs/OAuth2WebServer
+
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google Set in DB OAuth2Client : ' + JSON.stringify(oauth2Client));		
+		
+		// account id should already be known. When a user will create his profile, and connect to adsense, we will get this information back
+		// and store it upon integration with his Adsense.
+		// adsense.accounts.list({auth:oauth2Client}, function(err,response){ ......response.items[0].id }) should be used
+		var accountId = profiles[0].google.adsense_id;
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google Set in DB accountId : ' + accountId);		
+		
+		var yesterday = moment().subtract(1,'day').format('YYYY-MM-DD');
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google Set in DB yesterday is ' + yesterday);		
+
+
+		var reportParams = {
+			accountId : accountId,
+			auth : oauth2Client,
+			startDate: yesterday,
+			endDate: yesterday,
+			dimension:'DATE',
+			metric:'EARNINGS'
+		}
+
+		adsense.accounts.reports.generate(reportParams, function(errReport,response){
+			if (errReport){
+				console.log('Google Set in DB Error while getting report: ' + errReport);
+				console.log('Error while getting report: ' + JSON.stringify(errReport));
+			} else {				
+				console.log('Google Set in DB Response JSON: ' + JSON.stringify(response));
+
+				console.log('Google Set in DB Rows : ' + response.rows);
+				
+				var yesterdayValue = response.rows.find(function(a) { return a[0] === yesterday;})
+				console.log('Google Set in DB Yesterdays earnings : ' + yesterdayValue[1]);
+
+				// inserting in table Earning
+				Earning.create({
+					email:email,
+					source:"google",
+					date:yesterday,
+					quantity : yesterdayValue[1]
+				}, function(err,earning){
+					if (err){
+						console.log('Error while inserting GOOGLE Earning:' + err);
+					} else {
+						console.log('GOOGLE Earning inserted !!!!! YAYAYAYAAYA!!!!! YPIYIAKEK');
+					}
+				});
+			}
+		});
+	})
+
+	console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google Set in DB END');
+
+})
+
 
 module.exports = router;

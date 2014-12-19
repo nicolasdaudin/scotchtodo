@@ -5,7 +5,7 @@ var querystring = require('querystring');
 var https = require('https');
 
 var UserProfile = require('../models.js').UserProfile;
-
+var Earning = require('../models.js').Earning;
 
 // CLICKBANK CONSTANTS
 var CLICKBANK_CONSTANTS = {
@@ -265,6 +265,56 @@ router.get('/sumup',function(req,res){
 
 })
 
+// set clickbank's yesterday data in DB
+router.post('/yesterday',function(req,res){
+	console.log('Clickbank YESTERDAY in DB method START');
+
+	
+	//var yesterday = moment().subtract(1,'day').format('YYYY-MM-DD');
+	var yesterday = moment().subtract(1,'day').format('YYYY-MM-DD');
+
+	function parseClickbankResult2(result){
+		var resultJson = JSON.parse(result);
+		if (resultJson == null){
+			result = {
+				sale : 0,
+				refund : 0,
+				chargeback : 0
+			};
+		} else{
+			result = {
+				sale : resultJson.accountData.quickStats.sale,
+				refund : resultJson.accountData.quickStats.refund,
+				chargeback : resultJson.accountData.quickStats.chargeback
+			};
+		}
+		return result;
+
+	}
+
+	clickbankQuick(yesterday,function(result){
+		parsed = parseClickbankResult2(result);
+		console.log('Clickbank YESTERDAY in DB result: ' + parsed);	
+
+		// inserting in table Earning
+		Earning.create({
+			email:email,
+			source:"clickbank",
+			date:yesterday,
+			quantity : parsed.sale
+		}, function(err,earning){
+			if (err){
+				console.log('Error while inserting CLICKBANK Earning:' + err);
+			} else {
+				console.log('CLICKBANK Earning inserted !!!!! YAYAYAYAAYA!!!!! YPIYIAKEK');
+			}
+		});
+
+
+
+	});
+
+})
 
 var clickbankQuick = function(date_interval,callback){
 
@@ -290,6 +340,9 @@ var clickbankQuick = function(date_interval,callback){
 		if (date_interval.start != null){
 			clickbankQueryData.startDate = date_interval.start;
 			clickbankQueryData.endDate = date_interval.end;
+		} else {
+			clickbankQueryData.startDate = date_interval;
+			clickbankQueryData.endDate = date_interval;
 		}
 
 		var clickbankQueryString = querystring.stringify(clickbankQueryData);
