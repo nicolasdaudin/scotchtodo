@@ -13,8 +13,9 @@ var moment = require('moment');
 //require('array.prototype.find');
 
 var todojs 		= require('./smd_modules/todo.js'		);
-var clickbankjs = require('./smd_modules/clickbank.js'	);
+var clickbank_routes = require('./routes/clickbank_routes.js'	);
 var googlejs 	= require('./smd_modules/google.js'		);
+var cronjs 		= require('./smd_modules/cron.js'		);
 
 
 
@@ -46,7 +47,7 @@ app.use(methodOverride());
 
 // routes ======================================
 app.use('/todos', 		todojs);
-app.use('/clickbank',	clickbankjs);
+app.use('/clickbank',	clickbank_routes);
 app.use('/google'	,	googlejs);
 
 // api -----------------------------------

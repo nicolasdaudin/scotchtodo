@@ -78,18 +78,6 @@ function mainController($scope, $http){
 		console.log('Todo to edit: ' + JSON.stringify(todoToEdit));
 	};
 
-	$scope.getClickBankStatsMonth = function(){
-		$http.get('/clickbank/month')
-				.success(function(data){					
-					console.log('Clickbank month operation: success');
-					console.log(JSON.stringify(data));
-					$scope.clickbankResultMonth = data.accountData.quickStats.sale;
-				})
-				.error(function(data){
-					console.log('Clickbank operation: ERROR');
-				});
-
-	}
 
 	$scope.getClickBankStatsSumup = function(){
 		$http.get('/clickbank/sumup')
