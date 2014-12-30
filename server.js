@@ -14,7 +14,7 @@ var moment = require('moment');
 
 var todojs 		= require('./smd_modules/todo.js'		);
 var clickbank_routes = require('./routes/clickbank_routes.js'	);
-var googlejs 	= require('./smd_modules/google.js'		);
+var google_routes 	= require('./routes/google_routes.js'		);
 var cronjs 		= require('./smd_modules/cron.js'		);
 
 
@@ -48,7 +48,7 @@ app.use(methodOverride());
 // routes ======================================
 app.use('/todos', 		todojs);
 app.use('/clickbank',	clickbank_routes);
-app.use('/google'	,	googlejs);
+app.use('/google'	,	google_routes);
 
 // api -----------------------------------
 

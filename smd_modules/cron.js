@@ -8,6 +8,9 @@ var cron = require('cron');
 var UserProfile = require('../models.js').UserProfile;
 var Earning = require('../models.js').Earning;
 
+var GoogleBiz = require('../smd_modules/google_biz.js').GoogleBiz();
+
+
 // CLICKBANK CONSTANTS
 var CLICKBANK_CONSTANTS = {
 	HOST: 'api.clickbank.com',	
@@ -25,14 +28,15 @@ var CLICKBANK_CONSTANTS = {
 // default email to store and retrieve Clickbank info (until we implement user logins and profiles)
 var email = 'nicolas.daudin@gmail.com';
 
-var clickbankStartCron = function(){
-	console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Clickbank - ABOUT TO DECLARE CRON');
+var clickbankCreateCron = function(){
+	console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Clickbank + Google - ABOUT TO DECLARE CRON');
 	var job = new cron.CronJob('*/30 * * * * *', function() {
+		var now = moment().format('YYYY-MM-DD HH:mm:ss');
+
+		// CLICBANK CRON 
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Clickbank - START EXECUTING');
 	
 		//var yesterday = moment().subtract(1,'day').format('YYYY-MM-DD');
-		var now = moment().format('YYYY-MM-DD HH:mm:ss');
-
 		
 
 		clickbankQuick(now,function(result){
@@ -50,19 +54,44 @@ var clickbankStartCron = function(){
 					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' CRON Clickbank - Error while inserting CLICKBANK Earning:' + err);
 					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Clickbank - END WITH ERRORS');
 				} else {
-					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' CRON Clickbank - Earning inserted !!!!! YAYAYAYAAYA!!!!! YPIYIAKEK');
+					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' CRON Clickbank - Earning of amount['+parsed.sale+'] for date['+now+'] inserted !!!!!');
 					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Clickbank - END SUCCESSFULL');
 
 				}
 			});
-
-
-
 		});
+
+		// GOOGLE CRON
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Google - START EXECUTING');
+		GoogleBiz.getAdsenseReport(function(report){
+			var amount = report.yesterday;
+
+			//var yesterday = moment().subtract(1,'day').format('YYYY-MM-DD');
+
+			// inserting in table Earning
+			Earning.create({
+				email:email,
+				source:"google",
+				date:now,
+				quantity : amount
+			}, function(err,earning){
+				if (err){
+					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Google - Error while inserting GOOGLE Earning:' + err);
+					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Google - END WITH ERRORS');
+				} else {
+					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON GOOGLE - Earning of amount['+amount+'] for date['+now+'] inserted !!!!!');
+					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Google - END SUCCESSFULL');
+				}
+			});
+		});
+
+
 	});
-	//job.start();
+	job.start();
 };
-clickbankStartCron();
+clickbankCreateCron();
+
+
 
 var clickbankQuick = function(date_interval,callback){
 

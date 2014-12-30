@@ -107,11 +107,29 @@ var ClickbankBiz = function(){
 		});
 	};
 
+	var saveEarning = function(email,date,amount){
+
+		// inserting in table Earning
+		Earning.create({
+			email	:   email,
+			source	:   "clickbank",
+			date 	:   date,
+			quantity  : amount
+		}, function(err,earning){
+			if (err){
+				console.log('Error while inserting CLICKBANK Earning:' + err);
+			} else {
+				console.log('CLICKBANK Earning of amount['+amount+'] for date['+date+'] inserted !!!!!');
+			}
+		});
+	};
+
 
 
 	return {
 		parse: parseClickbankResult,
-		quick: clickbankQuick
+		quick: clickbankQuick,
+		saveEarning: saveEarning
 	};  
 
 
