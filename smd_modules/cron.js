@@ -89,7 +89,7 @@ var clickbankCreateCron = function(){
 	});
 	job.start();
 };
-clickbankCreateCron();
+//clickbankCreateCron();
 
 
 

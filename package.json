@@ -16,6 +16,7 @@
 		"array.prototype.find" : "*",
 		"type-of-is"	: "~3.3.0",
 		"mongoose-currency":"*",
-		"cron"			:"*"
+		"cron"			:"*",
+		"nodemailer" 	:"~0.7.1"
     }
 }
