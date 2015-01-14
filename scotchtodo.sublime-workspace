@@ -115,7 +115,15 @@
 			"file": "smd_modules/cron.js",
 			"settings":
 			{
-				"buffer_size": 5699,
+				"buffer_size": 5701,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "package.json",
+			"settings":
+			{
+				"buffer_size": 537,
 				"line_ending": "Windows"
 			}
 		},
@@ -147,7 +155,23 @@
 			"file": "server.js",
 			"settings":
 			{
-				"buffer_size": 2191,
+				"buffer_size": 2266,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "routes/clickbank_routes.js",
+			"settings":
+			{
+				"buffer_size": 2922,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "smd_modules/mail.js",
+			"settings":
+			{
+				"buffer_size": 1501,
 				"line_ending": "Windows"
 			}
 		}
@@ -272,7 +296,7 @@
 	"groups":
 	[
 		{
-			"selected": 4,
+			"selected": 8,
 			"sheets":
 			[
 				{
@@ -307,20 +331,47 @@
 					"file": "smd_modules/cron.js",
 					"settings":
 					{
-						"buffer_size": 5699,
+						"buffer_size": 5701,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1233,
-								1233
+								3389,
+								3389
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 756.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "package.json",
+					"settings":
+					{
+						"buffer_size": 537,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								529,
+								529
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
@@ -330,7 +381,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 3,
 					"file": "smd_modules/google_biz.js",
 					"settings":
 					{
@@ -357,7 +408,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 4,
 					"file": "smd_modules/todo.js",
 					"settings":
 					{
@@ -368,35 +419,8 @@
 						"selection":
 						[
 							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "models.js",
-					"settings":
-					{
-						"buffer_size": 1135,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
+								327,
+								438
 							]
 						],
 						"settings":
@@ -412,18 +436,98 @@
 				},
 				{
 					"buffer": 5,
-					"file": "server.js",
+					"file": "models.js",
 					"settings":
 					{
-						"buffer_size": 2191,
+						"buffer_size": 1135,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								786,
-								786
+								645,
+								645
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "server.js",
+					"settings":
+					{
+						"buffer_size": 2266,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1855,
+								1855
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 630.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "routes/clickbank_routes.js",
+					"settings":
+					{
+						"buffer_size": 2922,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2921,
+								2897
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "smd_modules/mail.js",
+					"settings":
+					{
+						"buffer_size": 1501,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1095,
+								1096
 							]
 						],
 						"settings":

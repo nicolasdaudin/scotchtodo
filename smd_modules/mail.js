@@ -7,6 +7,10 @@ var nodemailer = require("nodemailer");
 // to let a Gmail address use as a SMTP server, the google account should have this enabled to 'enable':
 // https://www.google.com/settings/security/lesssecureapps
 // (let less secure apps access your Google account)
+// might also be necessary to first enable access and unlock captcha via
+// https://accounts.google.com/DisplayUnlockCaptcha
+// all info are here: https://support.google.com/mail/answer/78754
+// anyway the idea is to create an amazon address or something
 var smtpTransport = nodemailer.createTransport("SMTP",{
 	service:"Gmail",
 	auth:{
