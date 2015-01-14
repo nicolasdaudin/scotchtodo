@@ -4,6 +4,9 @@ var moment = require('moment');
 
 var nodemailer = require("nodemailer");
 
+// to let a Gmail address use as a SMTP server, the google account should have this enabled to 'enable':
+// https://www.google.com/settings/security/lesssecureapps
+// (let less secure apps access your Google account)
 var smtpTransport = nodemailer.createTransport("SMTP",{
 	service:"Gmail",
 	auth:{
