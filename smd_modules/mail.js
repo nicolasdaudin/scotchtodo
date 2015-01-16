@@ -23,25 +23,36 @@ var email = 'nicolas.daudin@gmail.com';
 
 
 // send an email
-router.get('/send',function(req,res){
-	var mailOptions = {
-		from: 'Social Dashboard <socialdashboard@gmail.com>',
-		to : "nicolas.daudin@gmail.com",
-		subject : "[Social Dashboard] Earnings from yesterday",
-		text: "Hi, these are your earnings. Are you happy?",
-		html: "Hi, <strong>these</strong> are your <strong>earnings</strong>. Happy?"
+/*router.get('/send',function(req,res){
+	var text = "This email has been written at " + moment().format('YYYY-MM-DD hh:mm:ss');
+	send(text);	
+})*/
+
+var Mailer = function(){
+	var send = function(text){
+		var mailOptions = {
+			from: 'Social Dashboard <socialdashboard@gmail.com>',
+			to : "nicolas.daudin@gmail.com",
+			subject : "[Social Dashboard] Earnings from yesterday",		
+			html: text
+		};
+
+		smtpTransport.sendMail(mailOptions,function(err,resp){
+			if (err){
+				console.log(moment().format('YYYY-MM-DD hh:mm:ss') + 'Error while sending email: ' + err);
+				//res.end("error");
+			} else {
+				console.log(moment().format('YYYY-MM-DD hh:mm:ss') + 'Message successfully sent: ' + resp.message);
+				//res.end("sent");
+			}
+		})
+
 	};
 
-	smtpTransport.sendMail(mailOptions,function(err,resp){
-		if (err){
-			console.log(moment().format('YYYY-MM-DD hh:mm:ss') + 'Error while sending email: ' + err);
-			res.end("error");
-		} else {
-			console.log(moment().format('YYYY-MM-DD hh:mm:ss') + 'Message successfully sent: ' + resp.message);
-			res.end("sent");
-		}
-	})
-})
+	return {
+		send: send
+	}; 
 
+}
 
-module.exports = router;
+module.exports.Mailer = Mailer;

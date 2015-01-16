@@ -16,7 +16,7 @@ var todojs 		= require('./smd_modules/todo.js'		);
 var clickbank_routes = require('./routes/clickbank_routes.js'	);
 var google_routes 	= require('./routes/google_routes.js'		);
 var cronjs 		= require('./smd_modules/cron.js'		);
-var mailjs		= require('./smd_modules/mail.js');
+//var mailjs		= require('./smd_modules/mail.js');
 
 
 
@@ -50,7 +50,7 @@ app.use(methodOverride());
 app.use('/todos', 		todojs);
 app.use('/clickbank',	clickbank_routes);
 app.use('/google'	,	google_routes);
-app.use('/mail'	,	mailjs);
+//app.use('/mail'	,	mailjs);
 
 // api -----------------------------------
 
