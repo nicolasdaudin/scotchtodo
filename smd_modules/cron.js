@@ -32,8 +32,8 @@ var email = 'nicolas.daudin@gmail.com';
 
 var clickbankCreateCron = function(){
 	console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Clickbank + Google - ABOUT TO DECLARE CRON');
-	var job = new cron.CronJob('*/30 * * * * *', function() {
-		var now = moment().format('YYYY-MM-DD HH:mm:ss');
+	var job = new cron.CronJob('* 05 05 * * *', function() {
+		//var now = moment().format('YYYY-MM-DD HH:mm:ss');
 
 		
 
@@ -42,7 +42,7 @@ var clickbankCreateCron = function(){
 		// CLICBANK CRON 
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Clickbank - START EXECUTING');
 	
-		//var yesterday = moment().subtract(1,'day').format('YYYY-MM-DD');
+		var yesterday = moment().subtract(1,'day').format('YYYY-MM-DD');
 		
 
 		clickbankQuick(now,function(result){
@@ -53,14 +53,14 @@ var clickbankCreateCron = function(){
 			Earning.create({
 				email:email,
 				source:"clickbank",
-				date:now,
+				date:yesterday,
 				quantity : parsed.sale
 			}, function(err,earning){
 				if (err){
 					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' CRON Clickbank - Error while inserting CLICKBANK Earning:' + err);
 					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Clickbank - END WITH ERRORS');
 				} else {
-					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' CRON Clickbank - Earning of amount['+parsed.sale+'] for date['+now+'] inserted !!!!!');
+					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' CRON Clickbank - Earning of amount['+parsed.sale+'] for date['+yesterday+'] inserted !!!!!');
 					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Clickbank - END SUCCESSFULL');
 
 
@@ -75,18 +75,20 @@ var clickbankCreateCron = function(){
 						Earning.create({
 							email:email,
 							source:"google",
-							date:now,
+							date:yesterday,
 							quantity : amount
 						}, function(err,earning){
 							if (err){
 								console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Google - Error while inserting GOOGLE Earning:' + err);
 								console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Google - END WITH ERRORS');
 							} else {
-								console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON GOOGLE - Earning of amount['+amount+'] for date['+now+'] inserted !!!!!');
+								console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON GOOGLE - Earning of amount['+amount+'] for date['+yesterday+'] inserted !!!!!');
 								console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Google - END SUCCESSFULL');
 
 								// sending emails
-								Mailer.send('<p>On ' + now +' you have earned : <ul><li>Clickbank: ' + parsed.sale + ' USD</li><li>Google : ' + amount + ' EUR</li></ul>.</p><p>This email has been set from cron at ' + now + '</p>');
+								var mailBody = '<p>On day ' + yesterday +' you have earned : <ul><li>Clickbank: ' + parsed.sale + ' USD</li><li>Google : ' + amount + ' EUR</li></ul></p><p>This email has been set from cron at ' + now + '</p>';
+								var mailSubject = '[Social Dashboard] Earnings for day ' + yesterday;
+								Mailer.send(mailSubject,mailBody);
 							}
 						});
 					});

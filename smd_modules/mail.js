@@ -29,20 +29,20 @@ var email = 'nicolas.daudin@gmail.com';
 })*/
 
 var Mailer = function(){
-	var send = function(text){
+	var send = function(subject,body){
 		var mailOptions = {
 			from: 'Social Dashboard <socialdashboard@gmail.com>',
 			to : "nicolas.daudin@gmail.com",
-			subject : "[Social Dashboard] Earnings from yesterday",		
-			html: text
+			subject : subject,		
+			html: body
 		};
 
 		smtpTransport.sendMail(mailOptions,function(err,resp){
 			if (err){
-				console.log(moment().format('YYYY-MM-DD hh:mm:ss') + 'Error while sending email: ' + err);
+				console.log(moment().format('YYYY-MM-DD hh:mm:ss') + ' Error while sending email: ' + err);
 				//res.end("error");
 			} else {
-				console.log(moment().format('YYYY-MM-DD hh:mm:ss') + 'Message successfully sent: ' + resp.message);
+				console.log(moment().format('YYYY-MM-DD hh:mm:ss') + ' Message successfully sent: ' + resp.message);
 				//res.end("sent");
 			}
 		})

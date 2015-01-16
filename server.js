@@ -2,6 +2,7 @@
 var express = require ('express'); 
 var app		= express(); // create our app w/ express
 var morgan = require('morgan');// log requests to the console (express4)
+var moment = require('moment');
 var bodyParser = require('body-parser');// pull information from HTML POST (express4)
 var methodOverride = require('method-override');// simulate DELETE and PUT (express4)
 //var http = require('http');
@@ -70,4 +71,4 @@ app.get('*', function(req,res){
 // listen (start app with node server.js) =========================
 var PORT = 8080;
 app.listen(PORT);
-console.log("App DAEMON listening on port " + PORT);
+console.log(moment().format('YYYY-MM-DD HH:mm:ss') + " App DAEMON listening on port " + PORT);
