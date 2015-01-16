@@ -20,8 +20,8 @@ var OAuth2 = google.auth.OAuth2;
 var CLIENT_ID = "619973237257-ud5ujht6btm8njnfq6v158sm27abr5nn.apps.googleusercontent.com";
 var CLIENT_SECRET = "O-b4w10_tnK96SUG9tpdDYxS";
 
-//var REDIRECT_URL = "http://ec2-54-183-136-164.us-west-1.compute.amazonaws.com:8080/oauth2callback/google";
-var REDIRECT_URL = "http://localhost:8080/google/oauth2callback/";
+var REDIRECT_URL = "http://ec2-54-183-136-164.us-west-1.compute.amazonaws.com:8080/oauth2callback/google";
+//var REDIRECT_URL = "http://localhost:8080/google/oauth2callback/";
 
 var oauth2Client = new OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
 
