@@ -34,8 +34,9 @@ var clickbankCreateCron = function(){
 	console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Clickbank + Google - ABOUT TO DECLARE CRON');
 	/**
 	0 31 00 * * * is every day at 00:31:00
-	* 31 00 * * * is every day at 00:31, at every second*/
-	var job = new cron.CronJob('0 31 00 * * *', function() {
+	* 31 00 * * * is every day at 00:31, at every second
+	0 31 07 * * * is every day at 07:31:00 */
+	var job = new cron.CronJob('0 31 03 * * *', function() {
 		
 		// CLICBANK CRON 
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Clickbank - START EXECUTING');
