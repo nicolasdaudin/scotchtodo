@@ -32,7 +32,7 @@ var email = 'nicolas.daudin@gmail.com';
 
 var clickbankCreateCron = function(){
 	console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Clickbank + Google - ABOUT TO DECLARE CRON');
-	var job = new cron.CronJob('* 21 00 * * *', function() {
+	var job = new cron.CronJob('* 31 00 * * *', function() {
 		
 		// CLICBANK CRON 
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Clickbank - START EXECUTING');
