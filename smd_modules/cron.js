@@ -32,20 +32,15 @@ var email = 'nicolas.daudin@gmail.com';
 
 var clickbankCreateCron = function(){
 	console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Clickbank + Google - ABOUT TO DECLARE CRON');
-	var job = new cron.CronJob('* 06 00 * * *', function() {
-		//var now = moment().format('YYYY-MM-DD HH:mm:ss');
-
+	var job = new cron.CronJob('* 21 00 * * *', function() {
 		
-
-		
-
 		// CLICBANK CRON 
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Clickbank - START EXECUTING');
 	
 		var yesterday = moment().subtract(1,'day').format('YYYY-MM-DD');
 		
 
-		clickbankQuick(now,function(result){
+		clickbankQuick(yesterday,function(result){
 			parsed = parseClickbankResult(result);
 			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' CRON Clickbank NOW in DB result: ' + parsed);	
 
@@ -66,7 +61,7 @@ var clickbankCreateCron = function(){
 
 					// GOOGLE CRON
 					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Google - START EXECUTING');
-					GoogleBiz.getAdsenseReport(function(report){
+					GoogleBiz.getAdsenseReportYesterday(function(report){
 						var amount = report.yesterday;
 
 						//var yesterday = moment().subtract(1,'day').format('YYYY-MM-DD');
@@ -86,7 +81,7 @@ var clickbankCreateCron = function(){
 								console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Google - END SUCCESSFULL');
 
 								// sending emails
-								var mailBody = '<p>On day ' + yesterday +' you have earned : <ul><li>Clickbank: ' + parsed.sale + ' USD</li><li>Google : ' + amount + ' EUR</li></ul></p><p>This email has been set from cron at ' + now + '</p>';
+								var mailBody = '<p>On day ' + yesterday +' you have earned : <ul><li>Clickbank: ' + parsed.sale + ' USD</li><li>Google : ' + amount + ' EUR</li></ul></p><p>This email has been set from cron at ' + yesterday + '</p>';
 								var mailSubject = '[Social Dashboard] Earnings for day ' + yesterday;
 								Mailer.send(mailSubject,mailBody);
 							}

@@ -132,7 +132,7 @@ var GoogleBiz = function(){
 			// I retrieve everything from DB, except 'today'
 
 			// at the moment, I try to retrieve 'yesterday' from DB, and if it's not, I also take it from Google's result
-			// TODO: 'yesterday' should be retrieved by the cron
+			// TODO: 'yesterday' should be retrieved by the cron during the night, so here it should be retrieved in DB
 			var today = {
 				start 	:  	moment().format('YYYY-MM-DD'),
 				end 	: 	moment().format('YYYY-MM-DD')
@@ -198,6 +198,76 @@ var GoogleBiz = function(){
 		
 	};
 
+	var getAdsenseReportYesterday = function(callback){
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Start Google REPORT for YESTERDAY');		
+
+		// looking for credentials
+		UserProfile.find({email:email},function(err,profiles){
+			if (err){
+				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error while retrieving User Profile: ' + err);
+			}
+
+			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User profile: ' + JSON.stringify(profiles));	
+			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with Google credentials : ' + JSON.stringify(profiles[0].google));		
+			
+			// only get access and refresh
+			var credentials = {
+				access_token : profiles[0].google.access_token,
+				refresh_token : profiles[0].google.refresh_token
+			}
+
+			oauth2Client.setCredentials(credentials);
+			//https://developers.google.com/accounts/docs/OAuth2WebServer
+
+			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client : ' + JSON.stringify(oauth2Client));		
+			
+			// account id should already be known. When a user will create his profile, and connect to adsense, we will get this information back
+			// and store it upon integration with his Adsense.
+			// adsense.accounts.list({auth:oauth2Client}, function(err,response){ ......response.items[0].id }) should be used
+			var accountId = profiles[0].google.adsense_id;
+			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' accountId : ' + accountId);		
+			
+			// data retrieval strategy:
+			// I query Google directly.
+
+
+			var yesterday = {
+				start 	:  	moment().subtract(1,'day').format('YYYY-MM-DD'),
+				end 	: 	moment().subtract(1,'day').format('YYYY-MM-DD')
+			}
+			var reportParams = {
+				accountId : accountId,
+				auth : oauth2Client,
+				startDate: yesterday.start,
+				endDate: yesterday.end,
+				dimension:'DATE',
+				metric:'EARNINGS'
+			}
+
+			adsense.accounts.reports.generate(reportParams, function(errReport,response){
+				if (errReport){
+					console.log('Error while getting report: ' + errReport);
+					console.log('Error while getting report: ' + JSON.stringify(errReport));
+				} else {				
+					console.log('Google Reports Response JSON: ' + JSON.stringify(response));
+
+					console.log('Google Reports Rows : ' + response.rows);
+					
+					var yesterdayValue = response.rows.find(function(a) { return a[0] === yesterday.start;})
+					console.log('Google Report Yesterdays earnings : ' + yesterdayValue[1]);
+
+					callback({
+						yesterday: yesterdayValue[1]
+					});
+				}
+			});
+		})
+
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' End Google REPORT for YESTERDAY');
+
+		
+	};
+
 	// get adsense data from adsense API for yesterday and store them in DB
 	var saveEarning = function(){
 		console.log('Starting GoogleBiz.saveEarning()');
@@ -227,7 +297,8 @@ var GoogleBiz = function(){
 		generateAuthUrl: generateAuthUrl,
 		oauth2Callback: oauth2Callback,
 		getAdsenseReport: getAdsenseReport,
-		saveEarning : saveEarning,
+		getAdsenseReportYesterday : getAdsenseReportYesterday,
+		saveEarning : saveEarning
 
 	}; 
 
