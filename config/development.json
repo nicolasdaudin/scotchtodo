@@ -1,0 +1,5 @@
+{
+ 	"google": {
+		"oauth_callback_url": "http://localhost:8080/google/oauth2callback/"
+	}
+}

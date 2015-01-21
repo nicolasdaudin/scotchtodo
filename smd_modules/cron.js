@@ -36,7 +36,7 @@ var clickbankCreateCron = function(){
 	0 31 00 * * * is every day at 00:31:00
 	* 31 00 * * * is every day at 00:31, at every second
 	0 31 07 * * * is every day at 07:31:00 */
-	var job = new cron.CronJob('0 31 03 * * *', function() {
+	var job = new cron.CronJob('0 31 10 * * *', function() {
 		
 		// CLICBANK CRON 
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Clickbank - START EXECUTING');
@@ -48,6 +48,9 @@ var clickbankCreateCron = function(){
 			parsed = parseClickbankResult(result);
 			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' CRON Clickbank NOW in DB result: ' + parsed);	
 
+			var mailGoogleBody = "";
+			var mailClickbankBody = "";
+
 			// inserting in table Earning
 			Earning.create({
 				email:email,
@@ -58,40 +61,50 @@ var clickbankCreateCron = function(){
 				if (err){
 					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' CRON Clickbank - Error while inserting CLICKBANK Earning:' + err);
 					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Clickbank - END WITH ERRORS');
+
+					mailClickbankBody = "Clickbank: Error while retrieving Clickbank data. Please contact us for some help";
+
 				} else {
 					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' CRON Clickbank - Earning of amount['+parsed.sale+'] for date['+yesterday+'] inserted !!!!!');
 					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Clickbank - END SUCCESSFULL');
 
-
-					// GOOGLE CRON
-					console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Google - START EXECUTING');
-					GoogleBiz.getAdsenseReportYesterday(function(report){
-						var amount = report.yesterday;
-
-						//var yesterday = moment().subtract(1,'day').format('YYYY-MM-DD');
-
-						// inserting in table Earning
-						Earning.create({
-							email:email,
-							source:"google",
-							date:yesterday,
-							quantity : amount
-						}, function(err,earning){
-							if (err){
-								console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Google - Error while inserting GOOGLE Earning:' + err);
-								console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Google - END WITH ERRORS');
-							} else {
-								console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON GOOGLE - Earning of amount['+amount+'] for date['+yesterday+'] inserted !!!!!');
-								console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Google - END SUCCESSFULL');
-
-								// sending emails
-								var mailBody = '<p>On day ' + yesterday +' you have earned : <ul><li>Clickbank: ' + parsed.sale + ' USD</li><li>Google : ' + amount + ' EUR</li></ul></p><p>This email has been set from cron at ' + yesterday + '</p>';
-								var mailSubject = '[Social Dashboard] Earnings for day ' + yesterday;
-								Mailer.send(mailSubject,mailBody);
-							}
-						});
-					});
+					mailClickbankBody = 'Clickbank: ' + parsed.sale + ' USD';
 				}
+
+				// GOOGLE CRON
+				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Google - START EXECUTING');
+				GoogleBiz.getAdsenseReportYesterday(function(report){
+					var amount = report.yesterday;
+
+					//var yesterday = moment().subtract(1,'day').format('YYYY-MM-DD');
+
+					// inserting in table Earning
+					Earning.create({
+						email:email,
+						source:"google",
+						date:yesterday,
+						quantity : amount
+					}, function(err,earning){
+						if (err){
+							console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Google - Error while inserting GOOGLE Earning:' + err);
+							console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Google - END WITH ERRORS');
+
+							mailGoogleBody = "Google: Error while retrieving Google data. Please contact us for some help";
+						} else {
+							console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON GOOGLE - Earning of amount['+amount+'] for date['+yesterday+'] inserted !!!!!');
+							console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Google - END SUCCESSFULL');
+
+							mailGoogleBody = 'Google : ' + amount + ' EUR';
+						}
+
+						// sending emails
+						var mailBody = '<p>On day ' + yesterday +' you have earned : <ul><li>' + mailClickbankBody + '</li><li>' + mailGoogleBody + '</li></ul></p><p>This email has been set from cron at ' + yesterday + '</p>';
+						var mailSubject = '[Social Dashboard] Earnings for day ' + yesterday;
+						Mailer.send(mailSubject,mailBody);
+						
+					});
+				});
+				
 			});
 		});
 

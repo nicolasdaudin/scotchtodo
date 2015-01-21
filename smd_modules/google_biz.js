@@ -20,10 +20,14 @@ var OAuth2 = google.auth.OAuth2;
 var CLIENT_ID = "619973237257-ud5ujht6btm8njnfq6v158sm27abr5nn.apps.googleusercontent.com";
 var CLIENT_SECRET = "O-b4w10_tnK96SUG9tpdDYxS";
 
-var REDIRECT_URL = "http://ec2-54-183-136-164.us-west-1.compute.amazonaws.com:8080/google/oauth2callback";
+var config = require('config');
+var google_oauth_redirect_url = config.get('google.oauth_callback_url');
+console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google Oauth Call Back url from config is : ' + google_oauth_redirect_url);
+
+//var REDIRECT_URL = "http://ec2-54-183-136-164.us-west-1.compute.amazonaws.com:8080/google/oauth2callback";
 //var REDIRECT_URL = "http://localhost:8080/google/oauth2callback/";
 
-var oauth2Client = new OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
+var oauth2Client = new OAuth2(CLIENT_ID, CLIENT_SECRET, google_oauth_redirect_url);
 
 // default email to store and retrieve Google tokens (until we implement user logins and profiles)
 var email = 'nicolas.daudin@gmail.com';
@@ -162,6 +166,9 @@ var GoogleBiz = function(){
 				metric:'EARNINGS'
 			}
 
+			//https://developers.google.com/adsense/management/v1.4/reference/reports/generate
+			// ==> try (after 0:00 am in France i.e. 18pm in Mexico) to add useTimezoneReporting=true
+
 			adsense.accounts.reports.generate(reportParams, function(errReport,response){
 				if (errReport){
 					console.log('Error while getting report: ' + errReport);
@@ -172,6 +179,14 @@ var GoogleBiz = function(){
 					console.log('Google Reports Rows : ' + response.rows);
 					
 					var todayValue = response.rows.find(function(a) { return a[0] === today.start;})
+					/*if (todayValue){
+						// if the check is dont at 03:00 AM Europe time, Google is still at 'yesterday' 
+						// (Google Adsense reports are on Pacific Time (PST))
+						console.log('Google Report Todays earnings: ' + todayValue[1]);
+					} else {
+						todayValue[1] = 0;
+
+					}*/
 					console.log('Google Report Todays earnings: ' + todayValue[1]);
 
 					var yesterdayValue = response.rows.find(function(a) { return a[0] === yesterday.start;})

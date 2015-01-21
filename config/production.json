@@ -1,0 +1,5 @@
+{
+ 	"google": {
+		"oauth_callback_url": "http://ec2-54-183-136-164.us-west-1.compute.amazonaws.com:8080/google/oauth2callback"
+	}
+}
