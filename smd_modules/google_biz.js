@@ -213,8 +213,12 @@ var GoogleBiz = function(){
 		
 	};
 
-	var getAdsenseReportYesterday = function(callback){
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Start Google REPORT for YESTERDAY');		
+	/**
+	* @param day date of the report, format YYYY-MM-DD, ex moment().subtract(1,'day').format('YYYY-MM-DD')
+	* @return json { day : <income> } with income the amount of money earned that day
+	*/
+	var getAdsenseReportOneDay = function(day,callback){
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Start Google REPORT for DAY ' + day);		
 
 		// looking for credentials
 		UserProfile.find({email:email},function(err,profiles){
@@ -245,16 +249,11 @@ var GoogleBiz = function(){
 			// data retrieval strategy:
 			// I query Google directly.
 
-
-			var yesterday = {
-				start 	:  	moment().subtract(1,'day').format('YYYY-MM-DD'),
-				end 	: 	moment().subtract(1,'day').format('YYYY-MM-DD')
-			}
 			var reportParams = {
 				accountId : accountId,
 				auth : oauth2Client,
-				startDate: yesterday.start,
-				endDate: yesterday.end,
+				startDate: day,
+				endDate: day,
 				dimension:'DATE',
 				metric:'EARNINGS'
 			}
@@ -268,17 +267,17 @@ var GoogleBiz = function(){
 
 					console.log('Google Reports Rows : ' + response.rows);
 					
-					var yesterdayValue = response.rows.find(function(a) { return a[0] === yesterday.start;})
-					console.log('Google Report Yesterdays earnings : ' + yesterdayValue[1]);
+					var earning = response.rows.find(function(a) { return a[0] === day;})
+					console.log('Google Report earnings for day ' + day + ' : ' + earning[1]);
 
 					callback({
-						yesterday: yesterdayValue[1]
+						day: earning[1]
 					});
 				}
 			});
 		})
 
-		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' End Google REPORT for YESTERDAY');
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' End Google REPORT for DAY ' + day);	
 
 		
 	};
@@ -312,7 +311,7 @@ var GoogleBiz = function(){
 		generateAuthUrl: generateAuthUrl,
 		oauth2Callback: oauth2Callback,
 		getAdsenseReport: getAdsenseReport,
-		getAdsenseReportYesterday : getAdsenseReportYesterday,
+		getAdsenseReportOneDay : getAdsenseReportOneDay,
 		saveEarning : saveEarning
 
 	}; 

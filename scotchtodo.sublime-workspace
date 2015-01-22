@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"retrieve",
+				"retrieveAndSaveDataForDay"
+			],
+			[
+				"retr",
+				"retrieveAndSaveDataForDay"
+			],
+			[
 				"oau",
 				"oauth2callback"
 			],
@@ -119,7 +127,7 @@
 			"file": "smd_modules/cron.js",
 			"settings":
 			{
-				"buffer_size": 6687,
+				"buffer_size": 6690,
 				"line_ending": "Windows"
 			}
 		},
@@ -127,7 +135,7 @@
 			"file": "package.json",
 			"settings":
 			{
-				"buffer_size": 537,
+				"buffer_size": 555,
 				"line_ending": "Windows"
 			}
 		},
@@ -143,7 +151,23 @@
 			"file": "smd_modules/google_biz.js",
 			"settings":
 			{
-				"buffer_size": 10954,
+				"buffer_size": 11436,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "config/production.json",
+			"settings":
+			{
+				"buffer_size": 131,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "config/development.json",
+			"settings":
+			{
+				"buffer_size": 92,
 				"line_ending": "Windows"
 			}
 		},
@@ -175,7 +199,7 @@
 			"file": "routes/clickbank_routes.js",
 			"settings":
 			{
-				"buffer_size": 2922,
+				"buffer_size": 4090,
 				"line_ending": "Windows"
 			}
 		},
@@ -236,6 +260,7 @@
 	},
 	"file_history":
 	[
+		"/C/smd/dev/scotchtodo/config/production.json",
 		"/C/smd/dev/scotchtodo/smd_modules/google_biz.js",
 		"/C/smd/dev/scotchtodo/public/core.js",
 		"/C/smd/dev/scotchtodo/public/index.html",
@@ -279,6 +304,8 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"all_time",
+			"getAdsenseReportOneDay",
 			"now",
 			"oauth2Client",
 			"fs",
@@ -311,7 +338,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 10,
 			"sheets":
 			[
 				{
@@ -326,8 +353,8 @@
 						"selection":
 						[
 							[
-								2130,
-								2130
+								867,
+								867
 							]
 						],
 						"settings":
@@ -336,7 +363,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1008.0,
+						"translation.y": 1134.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -346,15 +373,15 @@
 					"file": "smd_modules/cron.js",
 					"settings":
 					{
-						"buffer_size": 6687,
+						"buffer_size": 6690,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1755,
-								1755
+								687,
+								687
 							]
 						],
 						"settings":
@@ -373,15 +400,15 @@
 					"file": "package.json",
 					"settings":
 					{
-						"buffer_size": 537,
+						"buffer_size": 555,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								529,
-								529
+								326,
+								326
 							]
 						],
 						"settings":
@@ -407,8 +434,8 @@
 						"selection":
 						[
 							[
-								816,
-								816
+								1535,
+								1578
 							]
 						],
 						"settings":
@@ -417,7 +444,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 336.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -427,15 +454,15 @@
 					"file": "smd_modules/google_biz.js",
 					"settings":
 					{
-						"buffer_size": 10954,
+						"buffer_size": 11436,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6616,
-								6616
+								8108,
+								8108
 							]
 						],
 						"settings":
@@ -444,13 +471,65 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1255.0,
+						"translation.y": 2702.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 5,
+					"file": "config/production.json",
+					"settings":
+					{
+						"buffer_size": 131,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								131,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "config/development.json",
+					"settings":
+					{
+						"buffer_size": 92,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								85,
+								85
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
 					"file": "smd_modules/todo.js",
 					"settings":
 					{
@@ -477,7 +556,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 8,
 					"file": "models.js",
 					"settings":
 					{
@@ -488,8 +567,8 @@
 						"selection":
 						[
 							[
-								645,
-								645
+								768,
+								768
 							]
 						],
 						"settings":
@@ -504,7 +583,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 9,
 					"file": "server.js",
 					"settings":
 					{
@@ -515,8 +594,8 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								1020,
+								1020
 							]
 						],
 						"settings":
@@ -524,25 +603,25 @@
 							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 126.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 10,
 					"file": "routes/clickbank_routes.js",
 					"settings":
 					{
-						"buffer_size": 2922,
+						"buffer_size": 4090,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2893,
-								2893
+								4051,
+								4051
 							]
 						],
 						"settings":
@@ -551,13 +630,13 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 630.0,
+						"translation.y": 1246.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 11,
 					"file": "smd_modules/mail.js",
 					"settings":
 					{

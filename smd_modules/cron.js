@@ -73,8 +73,8 @@ var clickbankCreateCron = function(){
 
 				// GOOGLE CRON
 				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ########## CRON Google - START EXECUTING');
-				GoogleBiz.getAdsenseReportYesterday(function(report){
-					var amount = report.yesterday;
+				GoogleBiz.getAdsenseReportOneDay(yesterday,function(report){
+					var amount = report.day;
 
 					//var yesterday = moment().subtract(1,'day').format('YYYY-MM-DD');
 

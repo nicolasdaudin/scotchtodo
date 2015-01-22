@@ -7,7 +7,6 @@ var ClickbankBiz = require('../smd_modules/clickbank_biz.js').ClickbankBiz();
 var email = 'nicolas.daudin@gmail.com';
 
 
-
 // get clickbank data
 router.get('/sumup',function(req,res){
 	console.log('Clickbank SUMUP method START');
@@ -30,11 +29,6 @@ router.get('/sumup',function(req,res){
 	var two_days_ago = {
 		start 	:  	moment().subtract(2,'day').format('YYYY-MM-DD'),
 		end 	: 	moment().subtract(2,'day').format('YYYY-MM-DD')
-	}
-
-	var all_time = {
-		start 	:  	'2014-06-01',
-		end 	: 	moment().subtract(1,'day').format('YYYY-MM-DD')
 	}
 
 	var queriesToBeDone = 4; 
@@ -94,7 +88,39 @@ var allData = function (res,today,yesterday,two_days_ago,current_month){
 }
 
 
+// get last 45 days
+router.get('/import',function(req,res){
+	console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Clickbank Import Data from site START');
 
+	// yesterday
+	var day = moment().subtract(1,'day').format('YYYY-MM-DD');
+	retrieveAndSaveDataForDay(day,'2015-01-17',function(){
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Clickbank Import Data from site DONE');
+		res.send('Clickbank Import Data from site DONE');
+	});
+})
+
+
+var retrieveAndSaveDataForDay = function (day,day_limit,callback){
+
+	
+	if (moment(day).isBefore(day_limit)){
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Clickbank : Importation of data for day ' + day + ' DID NOT START. Limit of ' + day_limit + ' has been reached');
+		callback();
+	} else {
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Clickbank : Importation of data for day ' + day + ' STARTED');
+		ClickbankBiz.quick(day,function(result){
+			parsed = ClickbankBiz.parse(result);
+			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Clickbank Amount imported for day ' + day + ' : ' + parsed.sale);	
+
+			ClickbankBiz.saveEarning(email,day,parsed.sale);
+
+			var day_before = moment(day).subtract(1,'day').format('YYYY-MM-DD');
+			retrieveAndSaveDataForDay(day_before,day_limit,callback)
+
+		});
+	}
+}
 
 
 module.exports = router;
