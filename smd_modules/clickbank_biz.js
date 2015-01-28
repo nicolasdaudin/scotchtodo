@@ -20,6 +20,8 @@ var CONSTANTS = {
  	
  	DEV_API_KEY : 'DEV-8Q6RMJUSUOCR3PRFF2QUGF1JGQ575UO2' // info from the app, need to be moved to constants file or to DB
 
+
+
 };
 
 var ClickbankBiz = function(){
@@ -53,10 +55,10 @@ var ClickbankBiz = function(){
 				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error while retrieving user profile: '  + err);
 			}
 
-			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' userprofile found : '  + JSON.stringify(userprofile)); 
+			//console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' userprofile found : '  + JSON.stringify(userprofile)); 
 
 			var clickbankInfo = userprofile.clickbank;
-			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' clickbankInfo: '  + JSON.stringify(clickbankInfo));
+			//console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' clickbankInfo: '  + JSON.stringify(clickbankInfo));
 			
 			var account = clickbankInfo.account_name;
 			var api_key = clickbankInfo.api_key;
@@ -86,21 +88,26 @@ var ClickbankBiz = function(){
 			    }
 			  };
 
-			console.log('About to request Clickbank [using API KEY from master]: ' + JSON.stringify(options)); 
+			//console.log('About to request Clickbank [using API KEY from master]: ' + JSON.stringify(options)); 
 
 			//var clickbankResult; 
 			var cbreq = https.request(options, function(resCB) {
-				  console.log('RESP STATUS: ' + resCB.statusCode);
-				  console.log('RESP HEADERS: ' + JSON.stringify(resCB.headers));
-				  resCB.setEncoding('utf8');
-				  resCB.on('data', function (chunk) {
-				    console.log('BODY: ' + chunk);
-				    callback(chunk);
-				  });
+				//console.log('RESP STATUS: ' + resCB.statusCode);
+				
+				resCB.setEncoding('utf8');
+				resCB.on('data', function (chunk) {
+				    if (resCB.statusCode != 200){
+					  	callback('Problem with request for day ' + date_interval + ' : ' + chunk,null);
+					} else {
+						callback(null, chunk);						
+					}
 				});
+				
+			});
 			
 			cbreq.on('error', function(e) {
-			  	console.log('problem with request: ' + e);
+			  	//console.log('Problem with request for day ' + date_interval ' : ' + e);
+			  	callback('Problem with request for day ' + date_interval + ' : ' + e,null);
 			});
 			
 			cbreq.end();
@@ -124,12 +131,26 @@ var ClickbankBiz = function(){
 		});
 	};
 
+	var findEarning = function(email,date, callback){
+		Earning.find({email:email,source:"clickbank",date:date},function(err,earning){			
+			if (err || !earning || earning.length == 0){
+				//console.log('CLICKBANK No earning found for day:' + date);
+				callback();
+			} else {
+				//console.log('CLICKBANK Earning found : ' + JSON.stringify(earning));
+				//console.log('CLICKBANK Earning of amount['+earning[0].quantity+'] for date['+date+'] found !');
+				callback(earning[0]);
+			}
+		})
+	};
+
 
 
 	return {
 		parse: parseClickbankResult,
 		quick: clickbankQuick,
-		saveEarning: saveEarning
+		saveEarning: saveEarning,
+		findEarning: findEarning
 	};  
 
 

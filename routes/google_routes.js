@@ -62,9 +62,34 @@ router.get('/adsense',function(req,res){
 	
 })
 
-// get adsense data from adsense API and store them in DB
+// get adsense data from adsense API and store them in DB for yesterday
 router.post('/adsense',function(req,res){
-	GoogleBiz.saveEarning();
+	GoogleBiz.getAdsenseReport(function(report){
+		var amount = report.yesterday;
+
+		var yesterday = moment().subtract(1,'day').format('YYYY-MM-DD');
+		GoogleBiz.saveEarning(email,yesterday,amount);
+	});
+})
+
+// get last 45 days
+router.get('/import',function(req,res){
+	console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google Import Data from site START');
+
+	// yesterday
+	var day = moment().subtract(1,'day').format('YYYY-MM-DD');
+	var day_limit = moment().subtract(60,'day').format('YYYY-MM-DD');
+
+	GoogleBiz.getAdsenseReportSeveralDays(day_limit,day,function(earnings){
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google Import Data : earnings : ' + earnings);
+
+		earnings.forEach(function(element, index, array){			
+			console.log('Google Amount imported for day ' + element[0] + ' : ' + element[1]);
+			GoogleBiz.saveEarning(email,element[0],element[1]);
+		});
+
+		res.send('Google Import Data from site DONE');
+	});
 
 })
 

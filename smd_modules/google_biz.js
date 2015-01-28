@@ -22,10 +22,6 @@ var CLIENT_SECRET = "O-b4w10_tnK96SUG9tpdDYxS";
 
 var config = require('config');
 var google_oauth_redirect_url = config.get('google.oauth_callback_url');
-console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Google Oauth Call Back url from config is : ' + google_oauth_redirect_url);
-
-//var REDIRECT_URL = "http://ec2-54-183-136-164.us-west-1.compute.amazonaws.com:8080/google/oauth2callback";
-//var REDIRECT_URL = "http://localhost:8080/google/oauth2callback/";
 
 var oauth2Client = new OAuth2(CLIENT_ID, CLIENT_SECRET, google_oauth_redirect_url);
 
@@ -282,29 +278,102 @@ var GoogleBiz = function(){
 		
 	};
 
-	// get adsense data from adsense API for yesterday and store them in DB
-	var saveEarning = function(){
-		console.log('Starting GoogleBiz.saveEarning()');
-		getAdsenseReport(function(report){
-			var amount = report.yesterday;
+	/**
+	* @param day date of the report, format YYYY-MM-DD, ex moment().subtract(1,'day').format('YYYY-MM-DD')
+	* @return json { day : <income> } with income the amount of money earned that day
+	*/
+	var getAdsenseReportSeveralDays = function(day_begin, day_end,callback){
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Start Google REPORT for DAYS between ' + day_begin + ' and ' + day_end);		
 
-			var yesterday = moment().subtract(1,'day').format('YYYY-MM-DD');
+		// looking for credentials
+		UserProfile.find({email:email},function(err,profiles){
+			if (err){
+				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Error while retrieving User Profile: ' + err);
+			}
 
-			// inserting in table Earning
-			Earning.create({
-				email:email,
-				source:"google",
-				date:yesterday,
-				quantity : amount
-			}, function(err,earning){
-				if (err){
-					console.log('Error while inserting GOOGLE Earning:' + err);
-				} else {
-					console.log('GOOGLE Earning of amount['+amount+'] for date['+yesterday+'] inserted !!!!!');
+			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User profile: ' + JSON.stringify(profiles));	
+			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' User with Google credentials : ' + JSON.stringify(profiles[0].google));		
+			
+			// only get access and refresh
+			var credentials = {
+				access_token : profiles[0].google.access_token,
+				refresh_token : profiles[0].google.refresh_token
+			}
+
+			oauth2Client.setCredentials(credentials);
+			//https://developers.google.com/accounts/docs/OAuth2WebServer
+
+			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' OAuth2Client : ' + JSON.stringify(oauth2Client));		
+			
+			// account id should already be known. When a user will create his profile, and connect to adsense, we will get this information back
+			// and store it upon integration with his Adsense.
+			// adsense.accounts.list({auth:oauth2Client}, function(err,response){ ......response.items[0].id }) should be used
+			var accountId = profiles[0].google.adsense_id;
+			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' accountId : ' + accountId);		
+			
+			// data retrieval strategy:
+			// I query Google directly.
+
+			var reportParams = {
+				accountId : accountId,
+				auth : oauth2Client,
+				startDate: day_begin,
+				endDate: day_end,
+				dimension:'DATE',
+				metric:'EARNINGS'
+			}
+
+			adsense.accounts.reports.generate(reportParams, function(errReport,response){
+				if (errReport){
+					console.log('Error while getting report: ' + errReport);
+					console.log('Error while getting report: ' + JSON.stringify(errReport));
+				} else {				
+					//console.log('Google Reports Response JSON: ' + JSON.stringify(response));
+
+					//console.log('Google Reports Rows : ' + response.rows);
+					
+					//var earning = response.rows.find(function(a) { return a[0] === day;})
+					//console.log('Google Report earnings for day ' + day + ' : ' + earning[1]);
+
+					callback(response.rows);
 				}
 			});
-		});
+		})
+
+		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' End Google REPORT for DAYS between ' + day_begin + ' and ' + day_end);		
+
 		
+	};
+
+
+	var saveEarning = function(email,date,amount){
+
+		// inserting in table Earning
+		Earning.create({
+			email	:   email,
+			source	:   "google",
+			date 	:   date,
+			quantity  : amount
+		}, function(err,earning){
+			if (err){
+				console.log('Error while inserting GOOGLE Earning:' + err);
+			} else {
+				console.log('GOOGLE Earning of amount['+amount+'] for date['+date+'] inserted !!!!!');
+			}
+		});
+	};
+
+	var findEarning = function(email,date, callback){
+		Earning.find({email:email,source:"google",date:date},function(err,earning){			
+			if (err || !earning || earning.length == 0){
+				//console.log('GOOGLE No earning found for day:' + date);
+				callback();
+			} else {
+				//console.log('GOOGLE Earning found : ' + JSON.stringify(earning));
+				//console.log('GOOGLE Earning of amount['+earning[0].quantity+'] for date['+date+'] found !');
+				callback(earning[0]);
+			}
+		})
 	};
 
 	return {
@@ -312,7 +381,9 @@ var GoogleBiz = function(){
 		oauth2Callback: oauth2Callback,
 		getAdsenseReport: getAdsenseReport,
 		getAdsenseReportOneDay : getAdsenseReportOneDay,
-		saveEarning : saveEarning
+		saveEarning : saveEarning,
+		findEarning : findEarning,
+		getAdsenseReportSeveralDays : getAdsenseReportSeveralDays
 
 	}; 
 

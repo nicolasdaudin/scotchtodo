@@ -94,7 +94,8 @@ router.get('/import',function(req,res){
 
 	// yesterday
 	var day = moment().subtract(1,'day').format('YYYY-MM-DD');
-	retrieveAndSaveDataForDay(day,'2015-01-17',function(){
+	var day_limit = moment().subtract(45,'day').format('YYYY-MM-DD');
+	retrieveAndSaveDataForDay(day,day_limit,function(){
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Clickbank Import Data from site DONE');
 		res.send('Clickbank Import Data from site DONE');
 	});
@@ -109,15 +110,31 @@ var retrieveAndSaveDataForDay = function (day,day_limit,callback){
 		callback();
 	} else {
 		console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Clickbank : Importation of data for day ' + day + ' STARTED');
-		ClickbankBiz.quick(day,function(result){
-			parsed = ClickbankBiz.parse(result);
-			console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Clickbank Amount imported for day ' + day + ' : ' + parsed.sale);	
 
-			ClickbankBiz.saveEarning(email,day,parsed.sale);
+		var day_before = moment(day).subtract(1,'day').format('YYYY-MM-DD');
 
-			var day_before = moment(day).subtract(1,'day').format('YYYY-MM-DD');
-			retrieveAndSaveDataForDay(day_before,day_limit,callback)
+		// value exists already, we do not import it from Clickbank
+		ClickbankBiz.findEarning(email,day, function(earning){
+			if (earning){
+				console.log(moment().format('YYYY-MM-DD HH:mm:ss') + " Clickbank : Data for day " + day + " already exist. They won't be fetched.");
+				retrieveAndSaveDataForDay(day_before,day_limit,callback);
+			} else {
+				// value does not exist, we import it
+				ClickbankBiz.quick(day,function(err, result){
+					
+					if (err){
+						console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' ERROR while importing Clickbank data for day ' + day + ' : ' + err);	
+					} else {
+						parsed = ClickbankBiz.parse(result);
+						console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' Clickbank Amount imported for day ' + day + ' : ' + parsed.sale);	
+						ClickbankBiz.saveEarning(email,day,parsed.sale);
+					}
+					
+					
+					retrieveAndSaveDataForDay(day_before,day_limit,callback)
 
+				});
+			}
 		});
 	}
 }
